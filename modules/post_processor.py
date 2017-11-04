@@ -2,7 +2,7 @@
 # coding: utf-8
 
 
-"""Used to diplay results of computation."""
+"""Used to diplay results of computa."""
 
 
 __author__ = "Ewen BRUN, Pierre HAON"

@@ -17,7 +17,7 @@ class Material:
         self.description = description
 
     def __repr__(self):
-        return "%s de section %d mm^2 et de module de Young %d MPa" % (self.description, self.S, self.E)
+        return "<%s de section %d mm^2 et de module de Young %d MPa>" % (self.description, self.S, self.E)
 
     def __str__(self):
         return "%s de section %d mm^2 et de module de Young %d MPa" % (self.description, self.S, self.E)

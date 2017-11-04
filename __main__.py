@@ -9,13 +9,7 @@ __author__ = "Ewen BRUN, Pierre HAON"
 __email__ = "ewen.brun@ecam.fr"
 
 
-from modules import models, pre_processor, processor, post_processor
+import models
 
 
 model = models.Poutre()
-
-# pre_processor.mesh(model)
-
-# processor.process(model)
-
-# post_processor.plot(model)
