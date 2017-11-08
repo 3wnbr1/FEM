@@ -9,6 +9,7 @@ __author__ = "Ewen BRUN, Pierre HAON"
 __email__ = "ewen.brun@ecam.fr"
 
 
+import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider
 

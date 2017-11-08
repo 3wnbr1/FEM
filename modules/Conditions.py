@@ -2,13 +2,13 @@
 # coding: utf-8
 
 
-"""Backend module with Efforts definition."""
+"""Backend module with Efforts and conditions at limits."""
 
 
 __author__ = "Ewen BRUN, Pierre HAON"
 __email__ = "ewen.brun@ecam.fr"
 
 
-class Effort:
+class Conditions:
     def __init__(self):
         pass

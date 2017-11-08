@@ -12,4 +12,4 @@ __email__ = "ewen.brun@ecam.fr"
 import models
 
 
-model = models.Poutre()
+model = models.PoutreEnTraction()
