@@ -10,6 +10,7 @@ __email__ = "ewen.brun@ecam.fr"
 
 import numpy as np
 import numpy.linalg as nl
+import matplotlib.pyplot as plt
 from modules.Computation import Matrix
 from modules import Conditions, Material, Elements
 
@@ -21,7 +22,7 @@ class Model:
         self.material = Material.Material()
 
         self._lenght = 1000  # default size is 1 meter
-        self._I = 1
+        self._I = (10*10**3)/12  # h * b**3 / 12
         self._D = 1
         self.elems(1)
 
@@ -85,3 +86,30 @@ class PoutreEnTraction(Model):
 
     def __repr__(self):
         return "Model Poutre en traction with %i-Dimension" % (self._D)
+
+
+class PoutreEnFlexion(Model):
+    def __new__(self):
+        self.__init_subclass__()
+        return super(Model, self).__new__(self)
+
+    def __init_subclass__(self):
+        self._D = 1
+
+    def mesh(self):
+        self.elements = []
+        for i in range(0, self._elements):
+            self.elements.append(Elements.Poutre(self, i))
+
+    def solve(self):
+        self._K1 = self.K.remove_null(0).remove_null(1)
+        self._F = [0]*(self._K1.shape[0])
+        self._F[-2] = -100
+        self._F[-1] = 0
+        self._U = nl.solve(self._K1, self._F)
+
+        plt.plot(np.linspace(0, 1000, len(self._U[::2])), self._U[::2])
+        plt.show()
+
+    def __repr__(self):
+        return "Model Poutre en flexion with %i-Dimension" % (self._D)

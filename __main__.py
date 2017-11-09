@@ -12,4 +12,6 @@ __email__ = "ewen.brun@ecam.fr"
 import models
 
 
-model = models.PoutreEnTraction()
+model = models.PoutreEnFlexion()
+model.elems(100)
+model.solve()
