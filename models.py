@@ -104,11 +104,17 @@ class PoutreEnFlexion(Model):
     def solve(self):
         self._K1 = self.K.remove_null(0).remove_null(1)
         self._F = [0]*(self._K1.shape[0])
-        self._F[-2] = -100
+        self._F[-2] = -10
         self._F[-1] = 0
         self._U = nl.solve(self._K1, self._F)
 
-        plt.plot(np.linspace(0, 1000, len(self._U[::2])), self._U[::2])
+        # plt.matshow(self._K1)
+
+        x = np.linspace(0, 1000, len(self._U[::2]))
+        xx = np.arange(0, 1000)
+        plt.plot(x, self._U[::2], label="FEM")
+        plt.plot(xx, -10*(xx)**3/(3*self._I*self.material.E), label="Deformee")
+        plt.legend()
         plt.show()
 
     def __repr__(self):

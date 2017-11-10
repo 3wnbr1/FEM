@@ -40,7 +40,7 @@ class Poutre(Element):
         return super(Element, self).__new__(self)
 
     def __init_subclass__(self, model, index):
-        l = model._elements / model._lenght
+        l = model._lenght / model._elements
         self.index = 1
         self.k = np.matrix([[12, 6*l, -12, 6*l], [6*l, 4*l**2, -6*l, 2*l**2], [-12, -6*l, 12, -6*l], [6*l, 2*l**2, -6*l, 4*l**2]])
-        self.k = self.k * model._I*model.material.E / (l**3)
+        self.k = model._I*model.material.E / (l**3) * self.k
