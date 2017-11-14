@@ -10,6 +10,7 @@ __email__ = "ewen.brun@ecam.fr"
 
 
 import numpy as np
+from numba import jit
 
 
 class Matrix(np.matrix):
@@ -18,6 +19,7 @@ class Matrix(np.matrix):
     def __new__(self, x, y, value=0.0):
         return super(Matrix, self).__new__(self, [[value] * x] * y)
 
+    @jit
     def compose(self, matrix, x, y):
         m = len(matrix)
         for n in range(m):
