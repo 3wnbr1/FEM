@@ -106,10 +106,16 @@ class PoutreEnFlexion(Model):
             self.elements.append(Elements.Poutre(self, i))
 
     def solve(self):
-        self._K1 = self.K().remove_null(0).remove_null(1)
-        self._F = [0]*(self._K1.shape[0])
-        self._F[-2] = -10
-        self._F[-1] = 0
+        selected = "centrered"
+        if selected == "simple":
+            self._K1 = self.K().remove_null(0).remove_null(1)
+            self._F = [0]*(self._K1.shape[0])
+            self._F[-2] = -10
+        elif selected == "centrered":
+            self._K1 = self.K().remove_null(0).remove_null(1).remove_null(1999).remove_null(1998)
+            self._F = [0]*(self._K1.shape[0])
+            self._F[1000] = -10
+
         self._U = nl.solve(self._K1, self._F)
 
         # plt.matshow(self._K1)
