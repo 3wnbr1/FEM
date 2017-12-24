@@ -14,4 +14,4 @@ import models
 
 model = models.PoutreEnFlexion()
 model.elems(1000)
-model.solve()
+model.solve(3)

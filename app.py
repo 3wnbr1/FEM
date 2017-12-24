@@ -12,9 +12,11 @@ __email__ = "ewen.brun@ecam.fr"
 import sys
 from PyQt5 import uic
 from PyQt5.QtWidgets import QMainWindow, QApplication
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
 
 
-qtCreatorFile = "ui/dialog.ui"
+qtCreatorFile = "ui/mainwindow.ui"
 Ui_MainWindow, QtBaseClass = uic.loadUiType(qtCreatorFile)
 
 

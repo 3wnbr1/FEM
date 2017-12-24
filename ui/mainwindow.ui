@@ -170,26 +170,28 @@
      </item>
     </layout>
    </widget>
-   <widget class="QFrame" name="frame">
+   <widget class="MplWidget" name="mpl" native="true">
     <property name="geometry">
      <rect>
-      <x>300</x>
+      <x>290</x>
       <y>10</y>
-      <width>501</width>
+      <width>511</width>
       <height>521</height>
      </rect>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::StyledPanel</enum>
-    </property>
-    <property name="frameShadow">
-     <enum>QFrame::Raised</enum>
     </property>
    </widget>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>MplWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">mplwidget</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

@@ -13,11 +13,14 @@ import numpy.linalg as nl
 import matplotlib.pyplot as plt
 from numba import jit
 from modules.Computation import Matrix
-from modules import Conditions, Material, Elements
+from modules import Material, Elements
 
 
 class Model:
+    """Finite elements model base class."""
+
     def __init__(self):
+        """Init base class."""
         self.elements = []
         self.conditions = []
         self.material = Material.Material()
@@ -36,6 +39,7 @@ class Model:
 
     @jit
     def mesh(self):
+        """Mesh the solid into elements."""
         self.elements = []
         if self._D == 1:
             for i in range(0, self._elements):
@@ -65,7 +69,10 @@ class Model:
 
 
 class PoutreEnTraction(Model):
+    """Model PoutreEnTraction from baseclass Model."""
+
     def __new__(self):
+        """Init super and current class."""
         self.__init_subclass__()
         return super(Model, self).__new__(self)
 
@@ -93,11 +100,14 @@ class PoutreEnTraction(Model):
 
 
 class PoutreEnFlexion(Model):
+    """Model PoutreEnFlexion from baseclass Model."""
+
     def __new__(self):
         self.__init_subclass__()
         return super(Model, self).__new__(self)
 
     def __init_subclass__(self):
+        """Init subclass."""
         self._D = 1
 
     def mesh(self):
@@ -105,14 +115,17 @@ class PoutreEnFlexion(Model):
         for i in range(0, self._elements):
             self.elements.append(Elements.Poutre(self, i))
 
-    def solve(self):
-        selected = "centrered"
-        if selected == "simple":
+    def solve(self, selected=1):
+        if selected == 1:
             self._K1 = self.K().remove_null(0).remove_null(1)
             self._F = [0]*(self._K1.shape[0])
             self._F[-2] = -10
-        elif selected == "centrered":
+        elif selected == 2:
             self._K1 = self.K().remove_null(0).remove_null(1).remove_null(1999).remove_null(1998)
+            self._F = [0]*(self._K1.shape[0])
+            self._F[1000] = -10
+        elif selected == 3:
+            self._K1 = self.K().remove_null(1999).remove_null(1).remove_null(1998).remove_null(1001)
             self._F = [0]*(self._K1.shape[0])
             self._F[1000] = -10
 
@@ -134,4 +147,22 @@ class PoutreEnFlexion(Model):
         plt.show()
 
     def __repr__(self):
+        """Repr."""
         return "Model Poutre en flexion with %i-Dimension" % (self._D)
+
+
+class TreilliSimple(Model):
+    """Model TreilliSimple from baseclass Model."""
+
+    def __new__(self):
+        """New."""
+        self.__init_subclass__()
+        return super(Model, self).__new__(self)
+
+    def __init_subclass__(self):
+        """Init subclass."""
+        self._D = 2
+
+    def __repr__(self):
+        """Repr."""
+        return "Model TreilliSimple with %i-Dimension" % (self._D)
