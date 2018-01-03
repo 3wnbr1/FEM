@@ -12,6 +12,7 @@ __email__ = "ewen.brun@ecam.fr"
 import sys
 import models
 import ast
+import random
 from PyQt5 import uic
 from PyQt5.QtWidgets import QMainWindow, QApplication
 
@@ -42,6 +43,7 @@ class App(QMainWindow, Ui_MainWindow):
     def modelChanged(self):
         """Change model on selection."""
         self.model = eval("models." + self.listWidget.currentItem().text())
+        self.mpl.canvas.deformee([1, 2, 3, 4], random.sample([1, 2, 3, 4, 5, 6, 7, 8, 9], 4))
 
 
 if __name__ == "__main__":
