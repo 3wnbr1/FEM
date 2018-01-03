@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>550</height>
+    <width>1085</width>
+    <height>754</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,166 +17,23 @@
    <bool>true</bool>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QDialogButtonBox" name="buttonBox">
-    <property name="geometry">
-     <rect>
-      <x>100</x>
-      <y>190</y>
-      <width>166</width>
-      <height>24</height>
-     </rect>
-    </property>
-    <property name="standardButtons">
-     <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-    </property>
-   </widget>
-   <widget class="QWidget" name="formLayoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>262</width>
-      <height>61</height>
-     </rect>
-    </property>
-    <layout class="QFormLayout" name="formLayout">
-     <item row="0" column="0">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Selectionner le matériaux</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QComboBox" name="comboBox_material"/>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_2">
-       <property name="text">
-        <string>Module de Young en GPa</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QDoubleSpinBox" name="doubleSpinBox_E">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="maximum">
-        <double>1200.000000000000000</double>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="formLayoutWidget_2">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>80</y>
-      <width>278</width>
-      <height>61</height>
-     </rect>
-    </property>
-    <layout class="QFormLayout" name="formLayout_2">
-     <item row="0" column="0">
-      <widget class="QLabel" name="label_3">
-       <property name="text">
-        <string>Section de la poutre      </string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QComboBox" name="comboBox_Form">
-       <item>
-        <property name="text">
-         <string>Carree</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Circulaire</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Hexagonale</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Orthogonale</string>
-        </property>
-       </item>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_4">
-       <property name="text">
-        <string>Cote de section en mm</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QDoubleSpinBox" name="doubleSpinBox_Form">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="focusPolicy">
-        <enum>Qt::ClickFocus</enum>
-       </property>
-       <property name="decimals">
-        <number>0</number>
-       </property>
-       <property name="maximum">
-        <double>1000.000000000000000</double>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="formLayoutWidget_3">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>150</y>
-      <width>260</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <layout class="QFormLayout" name="formLayout_3">
-     <item row="0" column="0">
-      <widget class="QLabel" name="label_6">
-       <property name="text">
-        <string>Longeur de la poutre en m   </string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QDoubleSpinBox" name="doubleSpinBox_L">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="focusPolicy">
-        <enum>Qt::ClickFocus</enum>
-       </property>
-       <property name="decimals">
-        <number>3</number>
-       </property>
-       <property name="maximum">
-        <double>10.000000000000000</double>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
    <widget class="MplWidget" name="mpl" native="true">
     <property name="geometry">
      <rect>
-      <x>290</x>
-      <y>10</y>
-      <width>511</width>
-      <height>521</height>
+      <x>270</x>
+      <y>0</y>
+      <width>821</width>
+      <height>731</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QListWidget" name="listWidget">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>1</y>
+      <width>271</width>
+      <height>731</height>
      </rect>
     </property>
    </widget>
