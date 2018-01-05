@@ -21,7 +21,7 @@ def listModels(models=models):
     """List models."""
     with open(models.__file__, 'r') as source:
         p = ast.parse(source.read())
-    return [node.name for node in ast.walk(p) if isinstance(node, ast.ClassDef)]
+    return [node.name for node in ast.walk(p) if isinstance(node, ast.ClassDef) and node.name != "Model"]
 
 
 qtCreatorFile = "ui/mainwindow.ui"
@@ -42,8 +42,10 @@ class App(QMainWindow, Ui_MainWindow):
 
     def modelChanged(self):
         """Change model on selection."""
-        self.model = eval("models." + self.listWidget.currentItem().text())
-        self.mpl.canvas.deformee([1, 2, 3, 4], random.sample([1, 2, 3, 4, 5, 6, 7, 8, 9], 4))
+        self.model = eval("models." + self.listWidget.currentItem().text() + '()')
+        self.model.elems(1000)
+        self.mpl.canvas.deformee(self.model.deformee, self.model.poutres)
+        self.mpl.canvas.contraintes([[1, 2, 3, 4], [0, -1, -3, -9]])
 
 
 if __name__ == "__main__":

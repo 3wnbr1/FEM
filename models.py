@@ -29,6 +29,7 @@ class Model:
         self._I = (10*10**3)/12  # h * b**3 / 12
         self._D = 1
         self.elems(1)
+        self.poutres = [[0, self._lenght], [0, 0]]
 
     def fix_at(postion):  # 0 is the begining and 1 is the end
         pass
@@ -37,34 +38,20 @@ class Model:
         self._elements = n
         self.mesh()
 
-    @jit
-    def mesh(self):
-        """Mesh the solid into elements."""
-        self.elements = []
-        if self._D == 1:
-            for i in range(0, self._elements):
-                self.elements.append(Elements.Bar(self, i))
-        elif self._D == 2:
-            for i in range(0, self._elements):
-                self.elements.append(Elements.Poutre(self, i))
-        else:
-            print("Not supported yet")
-
-    def solve(self, conditions):
-        nl.solve(self.K().remove_null(0), conditions)
-
     @property
     def ddl(self):
         return self.elements[0].k.shape[0] // 2
 
     @jit
     def K(self):
+        """Return rigidity matrix."""
         K = Matrix((self._elements+1)*self.ddl, (self._elements+1)*self.ddl)
         for i in range(0, self._elements):
             K.compose(self.elements[i].k, self.ddl*i, self.ddl*i)
         return K
 
     def __repr__(self):
+        """Repr."""
         return "Empty baseclass model"
 
 
@@ -77,25 +64,34 @@ class PoutreEnTraction(Model):
         return super(Model, self).__new__(self)
 
     def __init_subclass__(self):
+        """Init subclass from Model."""
         self._D = 1
 
     @jit
     def mesh(self):
+        """Mesh model."""
         self.elements = []
         for i in range(0, self._elements):
             self.elements.append(Elements.Bar(self, i))
 
     @jit
     def solve(self):
+        """Solve model."""
         self._F = [0]*(self.K().shape[0] - 1)
         self._F[-1] = 10
         self._U = nl.solve(self.K().remove_null(0), self._F)
         self._U = np.concatenate([[0], self._U])
         self._U = self._U.reshape(len(self._U), 1)
-        self._R = self.K()[1]*self._U
         self._F2 = nl.solve(self.K().remove_null(0), self._U[1:])
 
+    @property
+    def deformee(self):
+        """Return deformée."""
+        self.solve()
+        return [np.linspace(0, self._lenght, self._elements + 1), self._U]
+
     def __repr__(self):
+        """Repr."""
         return "Model Poutre en traction with %i-Dimension" % (self._D)
 
 

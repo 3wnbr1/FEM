@@ -14,21 +14,24 @@ class MplCanvas(FigureCanvasQTAgg):
         self.fig = Figure()
         # self.fig.text(0.03, 0.5, 'Selectionnez un modèle de calcul', fontsize=25, color='gray', alpha=0.5)
         self.ax1 = self.fig.add_subplot(211)
-        self.ax1.set_title('Deformée')
         self.ax2 = self.fig.add_subplot(212)
-        self.ax2.set_title('Contraintes')
         FigureCanvasQTAgg.__init__(self, self.fig)
         FigureCanvasQTAgg.setSizePolicy(
             self, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         FigureCanvasQTAgg.updateGeometry(self)
 
-    def deformee(self, x, y):
+    def deformee(self, deformee, poutre):
+        """Plot deformée."""
         self.ax1.cla()
-        self.ax1.plot(x, y)
+        self.ax1.set_title('Deformée')
+        self.ax1.plot(poutre[0], poutre[1])
+        self.ax1.plot(deformee[0], deformee[1])
         self.draw()
 
-    def contraintes(self, x, y):
+    def contraintes(self, contraintes):
+        """Plot contraintes."""
         self.ax2.cla()
+        self.ax2.set_title('Contraintes')
 
 
 class MplWidget(QtWidgets.QWidget):
