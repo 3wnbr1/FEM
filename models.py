@@ -26,29 +26,34 @@ class Model:
         self.material = Material.Material()
 
         self._lenght = 1000  # default size is 1 meter
-        self._I = (10*10**3)/12  # h * b**3 / 12
+        self._I = (10 * 10**3) / 12  # h * b**3 / 12
         self._D = 1
         self.elems(1)
         self.poutres = [[0, self._lenght], [0, 0]]
 
-    def fix_at(postion):  # 0 is the begining and 1 is the end
-        pass
-
     def elems(self, n):
+        """Set elements number and mesh."""
         self._elements = n
         self.mesh()
 
     @property
     def ddl(self):
+        """Return degrees de liberte."""
         return self.elements[0].k.shape[0] // 2
 
     @jit
     def K(self):
         """Return rigidity matrix."""
-        K = Matrix((self._elements+1)*self.ddl, (self._elements+1)*self.ddl)
+        K = Matrix((self._elements + 1) * self.ddl,
+                   (self._elements + 1) * self.ddl)
         for i in range(0, self._elements):
-            K.compose(self.elements[i].k, self.ddl*i, self.ddl*i)
+            K.compose(self.elements[i].k, self.ddl * i, self.ddl * i)
         return K
+
+    @property
+    def contraintes(self):
+        """Contraintes."""
+        return [[0, 1], [0, 1]]
 
     def __repr__(self):
         """Repr."""
@@ -77,7 +82,7 @@ class PoutreEnTraction(Model):
     @jit
     def solve(self):
         """Solve model."""
-        self._F = [0]*(self.K().shape[0] - 1)
+        self._F = [0] * (self.K().shape[0] - 1)
         self._F[-1] = 10
         self._U = nl.solve(self.K().remove_null(0), self._F)
         self._U = np.concatenate([[0], self._U])
@@ -90,6 +95,11 @@ class PoutreEnTraction(Model):
         self.solve()
         return [np.linspace(0, self._lenght, self._elements + 1), self._U]
 
+    @property
+    def types(self):
+        """Return conditions aux limites."""
+        return ["Traction", "Compression"]
+
     def __repr__(self):
         """Repr."""
         return "Model Poutre en traction with %i-Dimension" % (self._D)
@@ -99,6 +109,7 @@ class PoutreEnFlexion(Model):
     """Model PoutreEnFlexion from baseclass Model."""
 
     def __new__(self):
+        """New."""
         self.__init_subclass__()
         return super(Model, self).__new__(self)
 
@@ -107,29 +118,33 @@ class PoutreEnFlexion(Model):
         self._D = 1
 
     def mesh(self):
+        """Mesh."""
         self.elements = []
         for i in range(0, self._elements):
             self.elements.append(Elements.Poutre(self, i))
 
     def solve(self, selected=1):
+        """Solve model."""
         if selected == 1:
             self._K1 = self.K().remove_null(0).remove_null(1)
-            self._F = [0]*(self._K1.shape[0])
+            self._F = [0] * (self._K1.shape[0])
             self._F[-2] = -10
         elif selected == 2:
-            self._K1 = self.K().remove_null(0).remove_null(1).remove_null(1999).remove_null(1998)
-            self._F = [0]*(self._K1.shape[0])
+            self._K1 = self.K().remove_null(0).remove_null(
+                1).remove_null(1999).remove_null(1998)
+            self._F = [0] * (self._K1.shape[0])
             self._F[1000] = -10
         elif selected == 3:
-            self._K1 = self.K().remove_null(1999).remove_null(1).remove_null(1998).remove_null(1001)
-            self._F = [0]*(self._K1.shape[0])
+            self._K1 = self.K().remove_null(1999).remove_null(
+                1).remove_null(1998).remove_null(1001)
+            self._F = [0] * (self._K1.shape[0])
             self._F[1000] = -10
 
         self._U = nl.solve(self._K1, self._F)
 
         # plt.matshow(self._K1)
 
-        x = np.cumsum(self._lenght/self._elements*np.cos(self._U[1::2]))
+        x = np.cumsum(self._lenght / self._elements * np.cos(self._U[1::2]))
         plt.plot(x, self._U[::2], label="FEM")
 
         # xx = np.arange(0, 1001)
@@ -141,6 +156,16 @@ class PoutreEnFlexion(Model):
         plt.ylabel(r"Déformation en $mm$")
         plt.legend()
         plt.show()
+
+    @property
+    def deformee(self):
+        """Deformée of model."""
+        return [[1, 2], [3, 4]]
+
+    @property
+    def types(self):
+        """Return conditions aux limites."""
+        return ["Extremité", "Central", "Reparti"]
 
     def __repr__(self):
         """Repr."""

@@ -9,12 +9,12 @@ __author__ = "Ewen BRUN, Pierre HAON"
 __email__ = "ewen.brun@ecam.fr"
 
 
+import time
 import sys
-import models
 import ast
-import random
+import models
 from PyQt5 import uic
-from PyQt5.QtWidgets import QMainWindow, QApplication
+from PyQt5.QtWidgets import QMainWindow, QApplication, QProgressDialog
 
 
 def listModels(models=models):
@@ -36,16 +36,40 @@ class App(QMainWindow, Ui_MainWindow):
         QMainWindow.__init__(self)
         Ui_MainWindow.__init__(self)
         self.setupUi(self)
+        self.elements_horizontalSlider.setVisible(False)
+        self.elements_plainTextEdit.setVisible(False)
         self.listWidget.addItems(listModels())
 
         self.listWidget.currentTextChanged.connect(self.modelChanged)
+        self.elements_horizontalSlider.valueChanged.connect(self.elementsNumberChanged)
+        self.elements_horizontalSlider.sliderReleased.connect(self.compute)
 
     def modelChanged(self):
         """Change model on selection."""
         self.model = eval("models." + self.listWidget.currentItem().text() + '()')
+        self.tabwidget.addTabFromList(self.model.types)
         self.model.elems(1000)
         self.mpl.canvas.deformee(self.model.deformee, self.model.poutres)
-        self.mpl.canvas.contraintes([[1, 2, 3, 4], [0, -1, -3, -9]])
+        self.mpl.canvas.contraintes(self.model.contraintes)
+
+    def elementsNumberChanged(self):
+        """Change in number of elements."""
+        self.elements_plainTextEdit.setPlainText(str(self.elements_horizontalSlider.value()))
+
+    def compute(self):
+        """Compute."""
+        diag = QProgressDialog(self)
+        diag.setRange(0, 0)
+        diag.setValue(0)
+        diag.setModal(True)
+        diag.setWindowTitle("Calcul en cours")
+        diag.setLabelText("Resolution en cours...")
+        diag.show()
+        self.model.elems(self.elements_horizontalSlider.value())
+        diag.show()
+        QApplication.processEvents()
+        self.model.solve()
+        diag.reset()
 
 
 if __name__ == "__main__":
