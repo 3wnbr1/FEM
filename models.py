@@ -80,7 +80,7 @@ class PoutreEnTraction(Model):
             self.elements.append(Elements.Bar(self, i))
 
     @jit
-    def solve(self):
+    def solve(self, selected=0):
         """Solve model."""
         self._F = [0] * (self.K().shape[0] - 1)
         self._F[-1] = 10
@@ -92,7 +92,6 @@ class PoutreEnTraction(Model):
     @property
     def deformee(self):
         """Return deformée."""
-        self.solve()
         return [np.linspace(0, self._lenght, self._elements + 1), self._U]
 
     @property
@@ -123,44 +122,41 @@ class PoutreEnFlexion(Model):
         for i in range(0, self._elements):
             self.elements.append(Elements.Poutre(self, i))
 
-    def solve(self, selected=1):
+    def solve(self, selected=0):
         """Solve model."""
-        if selected == 1:
+        if selected == 0:
             self._K1 = self.K().remove_null(0).remove_null(1)
             self._F = [0] * (self._K1.shape[0])
             self._F[-2] = -10
-        elif selected == 2:
+        elif selected == 1:
             self._K1 = self.K().remove_null(0).remove_null(
-                1).remove_null(1999).remove_null(1998)
+                1).remove_null(self._elements-1).remove_null(self._elements-2)
             self._F = [0] * (self._K1.shape[0])
-            self._F[1000] = -10
-        elif selected == 3:
-            self._K1 = self.K().remove_null(1999).remove_null(
-                1).remove_null(1998).remove_null(1001)
+            self._F[self._elements // 2] = -10
+        else:
+            self._K1 = self.K().remove_null(0).remove_null(
+                1).remove_null(self._elements-1).remove_null(self._elements-2)
             self._F = [0] * (self._K1.shape[0])
-            self._F[1000] = -10
+            self._F[self._elements // 2] = -10
 
         self._U = nl.solve(self._K1, self._F)
 
         # plt.matshow(self._K1)
-
-        x = np.cumsum(self._lenght / self._elements * np.cos(self._U[1::2]))
-        plt.plot(x, self._U[::2], label="FEM")
-
+        # x = np.cumsum(self._lenght / self._elements * np.cos(self._U[1::2]))
+        # plt.plot(x, self._U[::2], label="FEM")
         # xx = np.arange(0, 1001)
         # plt.plot(xx, self._F[-2]*(xx)**3/(3*self._I*self.material.E), label=r"Flèche RDM : $\frac{F.L^{3}}{3.I_{gz}.E}$")
-
-        plt.plot([0, self._lenght], [0, 0], label="Situation initiale")
-        plt.title("FEM - Etude d'une poutre en flexion")
-        plt.xlabel(r"Longeur de la poutre en $mm$")
-        plt.ylabel(r"Déformation en $mm$")
-        plt.legend()
-        plt.show()
+        # plt.plot([0, self._lenght], [0, 0], label="Situation initiale")
+        # plt.title("FEM - Etude d'une poutre en flexion")
+        # plt.xlabel(r"Longeur de la poutre en $mm$")
+        # plt.ylabel(r"Déformation en $mm$")
+        # plt.legend()
+        # plt.show()
 
     @property
     def deformee(self):
         """Deformée of model."""
-        return [[1, 2], [3, 4]]
+        return np.cumsum(self._lenght / self._elements * np.cos(self._U[1::2])), self._U[::2]
 
     @property
     def types(self):

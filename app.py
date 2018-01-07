@@ -9,10 +9,9 @@ __author__ = "Ewen BRUN, Pierre HAON"
 __email__ = "ewen.brun@ecam.fr"
 
 
-import time
-import sys
 import ast
 import models
+from numpy import exp
 from PyQt5 import uic
 from PyQt5.QtWidgets import QMainWindow, QApplication, QProgressDialog
 
@@ -38,9 +37,11 @@ class App(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.elements_horizontalSlider.setVisible(False)
         self.elements_plainTextEdit.setVisible(False)
+        self.elements_plainTextEdit.setPlainText("10")
         self.listWidget.addItems(listModels())
 
         self.listWidget.currentTextChanged.connect(self.modelChanged)
+        self.tabwidget.Tabs.currentChanged.connect(self.typeChanged)
         self.elements_horizontalSlider.valueChanged.connect(self.elementsNumberChanged)
         self.elements_horizontalSlider.sliderReleased.connect(self.compute)
 
@@ -48,13 +49,19 @@ class App(QMainWindow, Ui_MainWindow):
         """Change model on selection."""
         self.model = eval("models." + self.listWidget.currentItem().text() + '()')
         self.tabwidget.addTabFromList(self.model.types)
-        self.model.elems(1000)
-        self.mpl.canvas.deformee(self.model.deformee, self.model.poutres)
-        self.mpl.canvas.contraintes(self.model.contraintes)
+
+    def typeChanged(self):
+        """Change type of study."""
+        if self.tabwidget.Tabs.currentIndex() != -1:
+            self.model.elems(int(self.elements_plainTextEdit.toPlainText()))
+            self.model.solve(self.tabwidget.Tabs.currentIndex())
+            self.mpl.canvas.deformee(self.model.deformee, self.model.poutres)
+            self.mpl.canvas.contraintes(self.model.contraintes)
 
     def elementsNumberChanged(self):
         """Change in number of elements."""
-        self.elements_plainTextEdit.setPlainText(str(self.elements_horizontalSlider.value()))
+        self.elements_plainTextEdit.setPlainText(str(int(exp(self.elements_horizontalSlider.value()))))
+        print(self.elements_plainTextEdit.toPlainText())
 
     def compute(self):
         """Compute."""
@@ -70,10 +77,4 @@ class App(QMainWindow, Ui_MainWindow):
         QApplication.processEvents()
         self.model.solve()
         diag.reset()
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = App()
-    window.show()
-    sys.exit(app.exec_())
+        self.typeChanged()

@@ -6,12 +6,16 @@
 
 
 __author__ = "Ewen BRUN, Pierre HAON"
-__email__ = "ewen.brun@ecam.fr"
+__email__ = "ewen.brun@ecam.fr, pierre.haon@ecam.fr"
 
 
-import models
+import sys
+from app import App
+from PyQt5.QtWidgets import QApplication
 
 
-model = models.PoutreEnFlexion()
-model.elems(1000)
-model.solve(3)
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = App()
+    window.show()
+    sys.exit(app.exec_())

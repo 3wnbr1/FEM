@@ -14,6 +14,7 @@ import numpy as np
 
 class Element:
     """Class used to store different elements types."""
+
     def __init__(self, model, index):
         pass
 
@@ -23,6 +24,7 @@ class Element:
 
 class Bar(Element):
     """Element barre pour efforts de traction."""
+
     def __new__(self, model, index):
         self.__init_subclass__(model, index)
         return super(Element, self).__new__(self)
@@ -35,6 +37,7 @@ class Bar(Element):
 
 class Poutre(Element):
     """Element poutre pour efforts de flexion."""
+
     def __new__(self, model, index):
         self.__init_subclass__(model, index)
         return super(Element, self).__new__(self)

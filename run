@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cd /Users/ewen/Desktop/Elements_Finis/FEM
+python3 __main__.py
