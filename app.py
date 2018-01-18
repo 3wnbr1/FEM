@@ -55,8 +55,8 @@ class App(QMainWindow, Ui_MainWindow):
         if self.tabwidget.Tabs.currentIndex() != -1:
             self.model.elems(int(self.elements_plainTextEdit.toPlainText()))
             self.model.solve(self.tabwidget.Tabs.currentIndex())
-            self.mpl.canvas.deformee(self.model.deformee, self.model.poutres)
-            self.mpl.canvas.contraintes(self.model.contraintes)
+            self.mpl.canvas.deformee(self.model)
+            self.mpl.canvas.contraintes(self.model)
 
     def elementsNumberChanged(self):
         """Change in number of elements."""

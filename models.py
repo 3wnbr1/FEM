@@ -30,6 +30,8 @@ class Model:
         self._D = 1
         self.elems(1)
         self.poutres = [[0, self._lenght], [0, 0]]
+        self.legend = {"title": "Not defined",
+                       "xtitle": "None", "ytitle": "None"}
 
     def elems(self, n):
         """Set elements number and mesh."""
@@ -54,6 +56,11 @@ class Model:
     def contraintes(self):
         """Contraintes."""
         return [[0, 1], [0, 1]]
+
+    @property
+    def initial(self):
+        """Return the initial poutre."""
+        return [0, self._lenght], [0, 0]
 
     def __repr__(self):
         """Repr."""
@@ -115,6 +122,8 @@ class PoutreEnFlexion(Model):
     def __init_subclass__(self):
         """Init subclass."""
         self._D = 1
+        self.legend = {"title": "Deformée poutre en flexion",
+                       'xtitle': r'Distance en $m$', 'ytitle': r'Deformée en $m$'}
 
     def mesh(self):
         """Mesh."""
@@ -125,33 +134,14 @@ class PoutreEnFlexion(Model):
     def solve(self, selected=0):
         """Solve model."""
         if selected == 0:
-            self._K1 = self.K().remove_null(0).remove_null(1)
+            self._K1 = self.K().remove_null(1).remove_null(0)
             self._F = [0] * (self._K1.shape[0])
             self._F[-2] = -10
         elif selected == 1:
-            self._K1 = self.K().remove_null(0).remove_null(
-                1).remove_null(self._elements-1).remove_null(self._elements-2)
+            self._K1 = self.K().remove_null(self._elements*2 - 1).remove_null(self._elements*2 - 1).remove_null(1).remove_null(0)
             self._F = [0] * (self._K1.shape[0])
-            self._F[self._elements // 2] = -10
-        else:
-            self._K1 = self.K().remove_null(0).remove_null(
-                1).remove_null(self._elements-1).remove_null(self._elements-2)
-            self._F = [0] * (self._K1.shape[0])
-            self._F[self._elements // 2] = -10
-
+            self._F[self._elements] = -10
         self._U = nl.solve(self._K1, self._F)
-
-        # plt.matshow(self._K1)
-        # x = np.cumsum(self._lenght / self._elements * np.cos(self._U[1::2]))
-        # plt.plot(x, self._U[::2], label="FEM")
-        # xx = np.arange(0, 1001)
-        # plt.plot(xx, self._F[-2]*(xx)**3/(3*self._I*self.material.E), label=r"Flèche RDM : $\frac{F.L^{3}}{3.I_{gz}.E}$")
-        # plt.plot([0, self._lenght], [0, 0], label="Situation initiale")
-        # plt.title("FEM - Etude d'une poutre en flexion")
-        # plt.xlabel(r"Longeur de la poutre en $mm$")
-        # plt.ylabel(r"Déformation en $mm$")
-        # plt.legend()
-        # plt.show()
 
     @property
     def deformee(self):
@@ -161,7 +151,7 @@ class PoutreEnFlexion(Model):
     @property
     def types(self):
         """Return conditions aux limites."""
-        return ["Extremité", "Central", "Reparti"]
+        return ["Extremité", "Central"]
 
     def __repr__(self):
         """Repr."""

@@ -20,15 +20,16 @@ class MplCanvas(FigureCanvasQTAgg):
             self, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         FigureCanvasQTAgg.updateGeometry(self)
 
-    def deformee(self, deformee, poutre):
+    def deformee(self, model):
         """Plot deformée."""
         self.ax1.cla()
         self.ax1.set_title('Deformée')
-        self.ax1.plot(poutre[0], poutre[1])
-        self.ax1.plot(deformee[0], deformee[1])
+        self.ax1.plot(model.deformee[0], model.deformee[1], label="Déformée")
+        self.ax1.plot(model.initial[0], model.initial[1], label="Inital")
+        self.ax1.legend()
         self.draw()
 
-    def contraintes(self, contraintes):
+    def contraintes(self, model):
         """Plot contraintes."""
         self.ax2.cla()
         self.ax2.set_title('Contraintes')
