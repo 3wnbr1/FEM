@@ -8,11 +8,11 @@
 __author__ = "Ewen BRUN, Pierre HAON"
 __email__ = "ewen.brun@ecam.fr"
 
+
 import numpy as np
 import numpy.linalg as nl
-import matplotlib.pyplot as plt
 from numba import jit
-from modules.Computation import Matrix
+from modules.Computation import Matrix, DynamicArray
 from modules import Material, Elements
 
 
@@ -89,12 +89,12 @@ class PoutreEnTraction(Model):
     @jit
     def solve(self, selected=0):
         """Solve model."""
-        self._F = [0] * (self.K().shape[0] - 1)
-        self._F[-1] = 10
-        self._U = nl.solve(self.K().remove_null(0), self._F)
+        self._F = DynamicArray([0] * self.K().shape[0])
+        self._F._array[-1] = 10
+        self._F._null = [0]
+        self._U = nl.solve(self.K().remove_null(0), self._F.array())
         self._U = np.concatenate([[0], self._U])
         self._U = self._U.reshape(len(self._U), 1)
-        self._F2 = nl.solve(self.K().remove_null(0), self._U[1:])
 
     @property
     def deformee(self):
@@ -133,25 +133,32 @@ class PoutreEnFlexion(Model):
 
     def solve(self, selected=0):
         """Solve model."""
+        K = self.K()
+        self._F = DynamicArray([0] * K.shape[0])
         if selected == 0:
-            self._K1 = self.K().remove_null(1).remove_null(0)
-            self._F = [0] * (self._K1.shape[0])
-            self._F[-2] = -10
+            self._K1 = K.remove_null(1).remove_null(0)
+            self._F._null = [0, 1]
+            self._F._array[-2] = -10
         elif selected == 1:
-            self._K1 = self.K().remove_null(self._elements*2 - 1).remove_null(self._elements*2 - 1).remove_null(1).remove_null(0)
-            self._F = [0] * (self._K1.shape[0])
-            self._F[self._elements] = -10
-        self._U = nl.solve(self._K1, self._F)
+            self._K1 = K.remove_null(self._elements * 2 - 1).remove_null(self._elements * 2 - 1).remove_null(1).remove_null(0)
+            self._F._null = [-1, -1, 1, 0]
+            self._F._array[self._elements] = -10
+        elif selected == 2:
+            self._K1 = K.remove_null(self._elements * 2 - 1).remove_null(self._elements * 2 - 1)
+            self._F._null = [1, -1]
+            self._F._array[len(self._F._array) // 2 + 1] = -10
+        self._U = DynamicArray(nl.solve(self._K1, self._F.array()).tolist())
+        self._U.arrayFromNull(self._F._null)
 
     @property
     def deformee(self):
         """Deformée of model."""
-        return np.cumsum(self._lenght / self._elements * np.cos(self._U[1::2])), self._U[::2]
+        return np.cumsum(self._lenght / self._elements * np.cos(self._U._array[1::2])), self._U._array[::2]
 
     @property
     def types(self):
         """Return conditions aux limites."""
-        return ["Extremité", "Central"]
+        return ["Extremité", "Central", "Autre"]
 
     def __repr__(self):
         """Repr."""
