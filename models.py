@@ -144,8 +144,8 @@ class PoutreEnFlexion(Model):
             self._F._null = [-1, -1, 1, 0]
             self._F._array[self._elements] = -10
         elif selected == 2:
-            self._K1 = K.remove_null(self._elements * 2 - 1).remove_null(self._elements * 2 - 1)
-            self._F._null = [1, -1]
+            self._K1 = K.remove_null(K.shape[0] - 2).remove_null(0)
+            self._F._null = [0, -2]
             self._F._array[len(self._F._array) // 2 + 1] = -10
         self._U = DynamicArray(nl.solve(self._K1, self._F.array()).tolist())
         self._U.arrayFromNull(self._F._null)
@@ -176,6 +176,22 @@ class TreilliSimple(Model):
     def __init_subclass__(self):
         """Init subclass."""
         self._D = 2
+
+    @jit
+    def mesh(self):
+        """Mesh model."""
+        self.elements = []
+        for i in range(3):
+            self.elements.append(Elements.Bar(self, i))
+
+    @jit
+    def K(self):
+        """Return rigidity matrix."""
+        K = Matrix((self._elements + 1) * self.ddl,
+                   (self._elements + 1) * self.ddl)
+        for i in range(0, self._elements):
+            K.compose(self.elements[i].k, self.ddl * i, self.ddl * i)
+        return K
 
     def __repr__(self):
         """Repr."""
