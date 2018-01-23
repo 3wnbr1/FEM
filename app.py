@@ -13,7 +13,7 @@ import ast
 import models
 from numpy import exp
 from PyQt5 import uic
-from PyQt5.QtWidgets import QMainWindow, QApplication, QProgressDialog
+from PyQt5.QtWidgets import QMainWindow, QApplication, QProgressDialog, QFileDialog, QMessageBox
 
 
 def listModels(models=models):
@@ -42,12 +42,15 @@ class App(QMainWindow, Ui_MainWindow):
 
         self.listWidget.currentTextChanged.connect(self.modelChanged)
         self.tabwidget.Tabs.currentChanged.connect(self.typeChanged)
-        self.elements_horizontalSlider.valueChanged.connect(self.elementsNumberChanged)
+        self.elements_horizontalSlider.valueChanged.connect(
+            self.elementsNumberChanged)
         self.elements_horizontalSlider.sliderReleased.connect(self.compute)
+        self.pushButtonSave.clicked.connect(self.saveFigure)
 
     def modelChanged(self):
         """Change model on selection."""
-        self.model = eval("models." + self.listWidget.currentItem().text() + '()')
+        self.model = eval(
+            "models." + self.listWidget.currentItem().text() + '()')
         self.tabwidget.addTabFromList(self.model.types)
 
     def typeChanged(self):
@@ -60,8 +63,19 @@ class App(QMainWindow, Ui_MainWindow):
 
     def elementsNumberChanged(self):
         """Change in number of elements."""
-        self.elements_plainTextEdit.setPlainText(str(int(exp(self.elements_horizontalSlider.value()))))
+        self.elements_plainTextEdit.setPlainText(
+            str(int(exp(self.elements_horizontalSlider.value()))))
         print(self.elements_plainTextEdit.toPlainText())
+
+    def saveFigure(self):
+        """Save figure."""
+        try:
+            name = QFileDialog.getSaveFileName(self, 'Save File')
+            if name[0] != "":
+                self.mpl.canvas.fig.savefig(name[0], dpi=300)
+        except:
+            QMessageBox.warning(self, 'Avertissement',
+                                "Le fichier n'as pas pu etre enregistré")
 
     def compute(self):
         """Compute."""
