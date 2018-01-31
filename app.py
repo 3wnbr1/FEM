@@ -73,9 +73,8 @@ class App(QMainWindow, Ui_MainWindow):
             name = QFileDialog.getSaveFileName(self, 'Save File')
             if name[0] != "":
                 self.mpl.canvas.fig.savefig(name[0], dpi=300)
-        except:
-            QMessageBox.warning(self, 'Avertissement',
-                                "Le fichier n'as pas pu etre enregistré")
+        except BaseException:
+            QMessageBox.warning(self, 'Avertissement', 'Le fichier n\'as pas pu etre enregistré')
 
     def compute(self):
         """Compute."""

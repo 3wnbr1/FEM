@@ -1,4 +1,4 @@
 #!/bin/bash
 
-cd /Users/ewen/Desktop/Elements_Finis/FEM
+cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )" || exit 1
 python3 __main__.py
