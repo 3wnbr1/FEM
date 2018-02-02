@@ -182,7 +182,7 @@ class TreilliSimple(Model):
         """Mesh model."""
         self.elements = []
         for i in range(3):
-            self.elements.append(Elements.Bar(self, i))
+            self.elements.append(Elements.TreillisBar(self, i, 1, np.pi / 2))
 
     @jit
     def K(self):
