@@ -12,7 +12,8 @@ __email__ = "ewen.brun@ecam.fr"
 import numpy as np
 import numpy.linalg as nl
 from numba import jit
-from modules.Computation import Matrix, DynamicArray
+from math import sqrt
+from modules.Computation import Matrix, DynamicArray, nodesCombination
 from modules import Material, Elements
 
 
@@ -35,7 +36,7 @@ class Model:
 
     def elems(self, n):
         """Set elements number and mesh."""
-        self._elements = n
+        self._nodes = n
         self.mesh()
 
     @property
@@ -46,9 +47,9 @@ class Model:
     @jit
     def K(self):
         """Return rigidity matrix."""
-        K = Matrix((self._elements + 1) * self.ddl,
-                   (self._elements + 1) * self.ddl)
-        for i in range(0, self._elements):
+        K = Matrix((self._nodes + 1) * self.ddl,
+                   (self._nodes + 1) * self.ddl)
+        for i in range(0, self._nodes):
             K.compose(self.elements[i].k, self.ddl * i, self.ddl * i)
         return K
 
@@ -83,7 +84,7 @@ class PoutreEnTraction(Model):
     def mesh(self):
         """Mesh model."""
         self.elements = []
-        for i in range(0, self._elements):
+        for i in range(0, self._nodes):
             self.elements.append(Elements.Bar(self, i))
 
     @jit
@@ -99,7 +100,7 @@ class PoutreEnTraction(Model):
     @property
     def deformee(self):
         """Return deformée."""
-        return [np.linspace(0, self._lenght, self._elements + 1), self._U]
+        return [np.linspace(0, self._lenght, self._nodes + 1), self._U]
 
     @property
     def types(self):
@@ -128,7 +129,7 @@ class PoutreEnFlexion(Model):
     def mesh(self):
         """Mesh."""
         self.elements = []
-        for i in range(0, self._elements):
+        for i in range(0, self._nodes):
             self.elements.append(Elements.Poutre(self, i))
 
     def solve(self, selected=0):
@@ -140,9 +141,10 @@ class PoutreEnFlexion(Model):
             self._F._null = [0, 1]
             self._F._array[-2] = -10
         elif selected == 1:
-            self._K1 = K.remove_null(self._elements * 2 - 1).remove_null(self._elements * 2 - 1).remove_null(1).remove_null(0)
+            self._K1 = K.remove_null(self._nodes * 2 - 1).remove_null(
+                self._nodes * 2 - 1).remove_null(1).remove_null(0)
             self._F._null = [-1, -1, 1, 0]
-            self._F._array[self._elements] = -10
+            self._F._array[self._nodes] = -10
         elif selected == 2:
             self._K1 = K.remove_null(K.shape[0] - 2).remove_null(0)
             self._F._null = [0, -2]
@@ -153,7 +155,7 @@ class PoutreEnFlexion(Model):
     @property
     def deformee(self):
         """Deformée of model."""
-        return np.cumsum(self._lenght / self._elements * np.cos(self._U._array[1::2])), self._U._array[::2]
+        return np.cumsum(self._lenght / self._nodes * np.cos(self._U._array[1::2])), self._U._array[::2]
 
     @property
     def types(self):
@@ -179,20 +181,47 @@ class TreilliSimple(Model):
 
     @jit
     def mesh(self):
-        """Mesh model."""
+        r"""
+        Mesh model.
+
+          2---4
+         / \ /
+        1---3
+        """
+        self._nodes = 4
         self.elements = []
-        for i in range(3):
-            self.elements.append(Elements.TreillisBar(self, i, 1, np.pi / 2))
+        self.elements.append(Elements.TreillisBar(self, [1, 2], 1, np.pi / 2))
+        self.elements.append(Elements.TreillisBar(self, [1, 3], sqrt(2), 0))
+        self.elements.append(Elements.TreillisBar(self, [2, 3], 1, np.pi / -2))
+        self.elements.append(Elements.TreillisBar(self, [2, 4], sqrt(2), 0))
+        self.elements.append(Elements.TreillisBar(self, [3, 4], 1, np.pi / 2))
 
     @jit
     def K(self):
         """Return rigidity matrix."""
-        K = Matrix((self._elements + 1) * self.ddl,
-                   (self._elements + 1) * self.ddl)
-        for i in range(0, self._elements):
-            K.compose(self.elements[i].k, self.ddl * i, self.ddl * i)
+        K = Matrix((self._nodes) * 2, (self._nodes) * 2)
+        x, y = 0, 0
+        for e in self.elements[0::2]:
+            K.compose(e.k, 2 * x, 2 * y)
+            x, y = x + 1, y + 1
+        for e in self.elements[1::2]:
+            c = nodesCombination(e.nodes)
+            for x in range(0, 4, 2):
+                for y in range(0, 4, 2):
+                    k = e.k[np.ix_([x, x + 1], [y, y + 1])]
+                    xx, yy = next(c)
+                    K[np.ix_([xx, xx+1], [yy, yy+1])] += k
         return K
 
     def __repr__(self):
         """Repr."""
         return "Model TreilliSimple with %i-Dimension" % (self._D)
+
+
+if __name__ == '__main__':
+    import matplotlib.pyplot as plt
+
+    m = TreilliSimple()
+    m.mesh()
+    plt.matshow(m.K())
+    plt.show()

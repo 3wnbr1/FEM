@@ -13,6 +13,13 @@ import numpy as np
 from numba import jit
 
 
+def nodesCombination(lst):
+    """Return nodes combinations as list."""
+    for x in lst:
+        for y in lst:
+            yield [x, y]
+
+
 class Matrix(np.matrix):
     """Extension of the np.matrix."""
 
