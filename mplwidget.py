@@ -29,11 +29,12 @@ class MplCanvas(FigureCanvasQTAgg):
 
     def graph(self, model):
         """Plot deformée."""
-        self.ax.cla()
+        self.fig.clf()
+        self.ax = self.fig.add_subplot(111)
         self.ax.set_title('Deformée')
-        lc = self.colorline(model.deformee[0], np.sin(model.deformee[0]), np.sin(model.deformee[0]))
+        lc = self.colorline(model.deformee[0], model.deformee[1], model.deformee[1])
         self.fig.colorbar(lc)
-        self.ax.plot(model.initial[0], model.initial[1], label="Inital")
+        self.ax.plot(model.initial[0], model.initial[1], label="Inital", linewidth=3, color='k')
         self.ax.legend()
         self.draw()
 

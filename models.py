@@ -100,7 +100,7 @@ class PoutreEnTraction(Model):
     @property
     def deformee(self):
         """Return deformée."""
-        return [np.linspace(0, self._lenght, self._nodes + 1), self._U]
+        return [np.linspace(0, self._lenght, self._nodes + 1), self._U.T[0]]
 
     @property
     def types(self):
