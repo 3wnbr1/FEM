@@ -1,6 +1,8 @@
 """Matplotlib QtDesigner Widget."""
 
 
+import numpy as np
+from cm import colorline
 from PyQt5 import QtWidgets
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
@@ -12,27 +14,21 @@ class MplCanvas(FigureCanvasQTAgg):
     def __init__(self):
         """Init."""
         self.fig = Figure()
-        # self.fig.text(0.03, 0.5, 'Selectionnez un modèle de calcul', fontsize=25, color='gray', alpha=0.5)
-        self.ax1 = self.fig.add_subplot(211)
-        self.ax2 = self.fig.add_subplot(212)
+        self.ax1 = self.fig.add_subplot(111)
         FigureCanvasQTAgg.__init__(self, self.fig)
         FigureCanvasQTAgg.setSizePolicy(
             self, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         FigureCanvasQTAgg.updateGeometry(self)
 
-    def deformee(self, model):
+    def graph(self, model):
         """Plot deformée."""
         self.ax1.cla()
         self.ax1.set_title('Deformée')
-        self.ax1.plot(model.deformee[0], model.deformee[1], label="Déformée")
+        lc = colorline(model.deformee[0], np.sin(model.deformee[0]), cmap='jet')
+        self.fig.colorbar(lc)
         self.ax1.plot(model.initial[0], model.initial[1], label="Inital")
         self.ax1.legend()
         self.draw()
-
-    def contraintes(self, model):
-        """Plot contraintes."""
-        self.ax2.cla()
-        self.ax2.set_title('Contraintes')
 
 
 class MplWidget(QtWidgets.QWidget):

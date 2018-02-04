@@ -20,7 +20,7 @@ class Bar:
         """Init."""
         self.index = index
         self.k = np.matrix([[1, -1], [-1, 1]])
-        self.k *= model.material.E * model.material.S * model._elements / model._lenght
+        self.k *= model.material.E * model.material.S * model._nodes / model._lenght
 
 
 class Poutre:
@@ -28,7 +28,7 @@ class Poutre:
 
     def __init__(self, model, index):
         """Init."""
-        self.lenght = model._lenght / model._elements
+        self.lenght = model._lenght / model._nodes
         self.index = index
         self.k = np.matrix([[12, 6 * self.lenght, -12, 6 * self.lenght], [6 * self.lenght, 4 * self.lenght**2, -6 * self.lenght, 2 * self.lenght**2],
                             [-12, -6 * self.lenght, 12, -6 * self.lenght], [6 * self.lenght, 2 * self.lenght**2, -6 * self.lenght, 4 * self.lenght**2]])

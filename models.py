@@ -190,11 +190,11 @@ class TreilliSimple(Model):
         """
         self._nodes = 4
         self.elements = []
-        self.elements.append(Elements.TreillisBar(self, [1, 2], 1, np.pi / 2))
+        self.elements.append(Elements.TreillisBar(self, [1, 2], 1, np.pi / 4))
         self.elements.append(Elements.TreillisBar(self, [1, 3], sqrt(2), 0))
-        self.elements.append(Elements.TreillisBar(self, [2, 3], 1, np.pi / -2))
+        self.elements.append(Elements.TreillisBar(self, [2, 3], 1, np.pi / -4))
         self.elements.append(Elements.TreillisBar(self, [2, 4], sqrt(2), 0))
-        self.elements.append(Elements.TreillisBar(self, [3, 4], 1, np.pi / 2))
+        self.elements.append(Elements.TreillisBar(self, [3, 4], 1, np.pi / 4))
 
     @jit
     def K(self):
@@ -210,8 +210,38 @@ class TreilliSimple(Model):
                 for y in range(0, 4, 2):
                     k = e.k[np.ix_([x, x + 1], [y, y + 1])]
                     xx, yy = next(c)
-                    K[np.ix_([xx, xx+1], [yy, yy+1])] += k
+                    K[np.ix_([xx, xx + 1], [yy, yy + 1])] += k
         return K
+
+    def solve(self, selected=0):
+        """Solve model."""
+        K = self.K()
+        self._F = DynamicArray([0] * K.shape[0])
+        self._K1 = K.remove_null(1).remove_null(0)
+        self._F._null = [0, 1]
+        self._F._array[-1] = -10
+        self._U = DynamicArray(nl.solve(self._K1, self._F.array()).tolist())
+        self._U.arrayFromNull(self._F._null)
+
+    @property
+    def initial(self):
+        """Initial."""
+        out = [[0], [0]]
+        for e in self.elements:
+            print(e.nodes)
+            out[1].append(sum(out[1]) + e.lenght * np.sin(e.alpha))
+            out[0].append(sum(out[0]) + e.lenght * np.cos(e.alpha))
+        return out
+
+    @property
+    def deformee(self):
+        """Return Deformée."""
+        return [0, 1]
+
+    @property
+    def types(self):
+        """Return conditions aux limites."""
+        return ["Simple"]
 
     def __repr__(self):
         """Repr."""
@@ -223,5 +253,3 @@ if __name__ == '__main__':
 
     m = TreilliSimple()
     m.mesh()
-    plt.matshow(m.K())
-    plt.show()

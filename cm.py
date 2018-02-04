@@ -6,9 +6,7 @@ import matplotlib.pyplot as plt
 import matplotlib.collections as mcoll
 
 
-def colorline(
-        x, y, z=None, cmap='copper', norm=plt.Normalize(0.0, 1.0),
-        linewidth=3, alpha=1.0):
+def colorline(x, y, z=None, cmap='jet', norm=plt.Normalize(0.0, 1.0), linewidth=3, alpha=1.0):
     """
     Colorline.
 
@@ -18,19 +16,14 @@ def colorline(
     """
     if z is None:
         z = np.linspace(0.0, 1.0, len(x))
-
     if not hasattr(z, "__iter__"):
         z = np.array([z])
-
     z = np.asarray(z)
-
     segments = make_segments(x, y)
-    lc = mcoll.LineCollection(segments, array=z, cmap=cmap, norm=norm,
-                              linewidth=linewidth, alpha=alpha)
-
+    lc = mcoll.LineCollection(
+        segments, array=z, cmap=cmap, norm=norm, linewidth=linewidth, alpha=alpha)
     ax = plt.gca()
     ax.add_collection(lc)
-
     return lc
 
 
