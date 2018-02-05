@@ -37,7 +37,7 @@ class App(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.elements_horizontalSlider.setVisible(False)
         self.elements_plainTextEdit.setVisible(False)
-        self.elements_plainTextEdit.setPlainText("10")
+        self.elements_plainTextEdit.setPlainText("100")
         self.listWidget.addItems(listModels())
 
         self.listWidget.currentTextChanged.connect(self.modelChanged)

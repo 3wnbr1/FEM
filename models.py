@@ -192,7 +192,7 @@ class TreilliSimple(Model):
         self.elements = []
         self.elements.append(Elements.TreillisBar(self, [1, 2], 1, np.pi / 4))
         self.elements.append(Elements.TreillisBar(self, [1, 3], sqrt(2), 0))
-        self.elements.append(Elements.TreillisBar(self, [2, 3], 1, np.pi / -4))
+        self.elements.append(Elements.TreillisBar(self, [2, 3], 1, 3 * np.pi / -4))
         self.elements.append(Elements.TreillisBar(self, [2, 4], sqrt(2), 0))
         self.elements.append(Elements.TreillisBar(self, [3, 4], 1, np.pi / 4))
 
@@ -217,8 +217,8 @@ class TreilliSimple(Model):
         """Solve model."""
         K = self.K()
         self._F = DynamicArray([0] * K.shape[0])
-        self._K1 = K.remove_null(1).remove_null(0)
-        self._F._null = [0, 1]
+        self._K1 = K.remove_null(5).remove_null(1).remove_null(0)
+        self._F._null = [0, 1, 5]
         self._F._array[-1] = -10
         self._U = DynamicArray(nl.solve(self._K1, self._F.array()).tolist())
         self._U.arrayFromNull(self._F._null)
