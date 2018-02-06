@@ -31,11 +31,12 @@ class MplCanvas(FigureCanvasQTAgg):
         """Plot deformée."""
         self.fig.clf()
         self.ax = self.fig.add_subplot(111)
-        self.ax.set_title('Deformée')
+        self.ax.set_title(model.legend['title'])
         lc = self.colorline(model.deformee[0], model.deformee[1], np.absolute(model.deformee[1]))
         self.fig.colorbar(lc)
         self.ax.plot(model.initial[0], model.initial[1], label="Inital", linewidth=3, color='k')
-        self.ax.legend()
+        self.ax.set_xlabel(model.legend['xtitle'])
+        self.ax.set_ylabel(model.legend['ytitle'])
         self.draw()
 
     def colorline(self, x, y, z):

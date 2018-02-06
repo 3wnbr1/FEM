@@ -31,8 +31,6 @@ class Model:
         self._D = 1
         self.elems(1)
         self.poutres = [[0, self._lenght], [0, 0]]
-        self.legend = {"title": "Not defined",
-                       "xtitle": "None", "ytitle": "None"}
 
     def elems(self, n):
         """Set elements number and mesh."""
@@ -62,6 +60,11 @@ class Model:
     def initial(self):
         """Return the initial poutre."""
         return [0, self._lenght], [0, 0]
+
+    @property
+    def legend(self):
+        """Graph legend."""
+        return {"title": "Not defined", "xtitle": "None", "ytitle": "None"}
 
     def __repr__(self):
         """Repr."""
@@ -100,12 +103,19 @@ class PoutreEnTraction(Model):
     @property
     def deformee(self):
         """Return deformée."""
-        return [np.linspace(0, self._lenght, self._nodes + 1), np.array(self._U.T[0])]
+        x = np.linspace(0, self._lenght, self._nodes + 1)
+        y = np.array(self._U.T[0])
+        return [x, y]
 
     @property
     def types(self):
         """Return conditions aux limites."""
         return ["Traction", "Compression"]
+
+    @property
+    def legend(self):
+        """Graph legend."""
+        return {"title": "Deformée poutre en Traction", 'xtitle': r'Distance en $mm$', 'ytitle': r'Deformée en $mm$'}
 
     def __repr__(self):
         """Repr."""
@@ -123,8 +133,6 @@ class PoutreEnFlexion(Model):
     def __init_subclass__(self):
         """Init subclass."""
         self._D = 1
-        self.legend = {"title": "Deformée poutre en flexion",
-                       'xtitle': r'Distance en $m$', 'ytitle': r'Deformée en $m$'}
 
     def mesh(self):
         """Mesh."""
@@ -162,6 +170,11 @@ class PoutreEnFlexion(Model):
         """Return conditions aux limites."""
         return ["Extremité", "Central", "Autre"]
 
+    @property
+    def legend(self):
+        """Graph legend."""
+        return {"title": "Deformée poutre en flexion", 'xtitle': r'Distance en $mm$', 'ytitle': r'Deformée en $mm$'}
+
     def __repr__(self):
         """Repr."""
         return "Model Poutre en flexion with %i-Dimension" % (self._D)
@@ -192,7 +205,8 @@ class TreilliSimple(Model):
         self.elements = []
         self.elements.append(Elements.TreillisBar(self, [1, 2], 1, np.pi / 4))
         self.elements.append(Elements.TreillisBar(self, [1, 3], sqrt(2), 0))
-        self.elements.append(Elements.TreillisBar(self, [2, 3], 1, 3 * np.pi / -4))
+        self.elements.append(Elements.TreillisBar(
+            self, [2, 3], 1, 3 * np.pi / -4))
         self.elements.append(Elements.TreillisBar(self, [2, 4], sqrt(2), 0))
         self.elements.append(Elements.TreillisBar(self, [3, 4], 1, np.pi / 4))
 
