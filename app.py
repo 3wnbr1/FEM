@@ -13,6 +13,7 @@ import ast
 import models
 from numpy import exp
 from PyQt5 import uic
+from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QMainWindow, QApplication, QProgressDialog, QFileDialog, QMessageBox
 from sqlalchemy import text
 
@@ -42,6 +43,8 @@ class App(QMainWindow, Ui_MainWindow):
         self.listWidget.addItems(listModels())
         self.model = models.Model()
         self.loadMaterials()
+        self.loadSections()
+        self.loadSectionImage()
 
         self.listWidget.currentTextChanged.connect(self.modelChanged)
         self.tabwidget.Tabs.currentChanged.connect(self.typeChanged)
@@ -52,6 +55,7 @@ class App(QMainWindow, Ui_MainWindow):
 
     def modelChanged(self):
         """Change model on selection."""
+        self.selectModelLabel.setHidden(True)
         self.model = eval(
             "models." + self.listWidget.currentItem().text() + '()')
         self.tabwidget.addTabFromList(self.model.types)
@@ -59,6 +63,19 @@ class App(QMainWindow, Ui_MainWindow):
     def loadMaterials(self):
         """Load materials from db."""
         self.materials_comboBox.addItems([i[0] for i in self.model.session.execute(text('select Name from Materials'))])
+
+    def loadSections(self):
+        """Load scetion names from db."""
+        self.sections_comboBox.addItems([i[0] for i in self.model.session.execute(text('select Name from Sections'))])
+
+    def loadSectionImage(self):
+        """Load image corresponding to section from db."""
+        p = QPixmap()
+        p.loadFromData(self.model.section.raw_Image)
+        p = p.scaled(64, 64)
+        self.sectionImageLabel.setPixmap(p)
+        self.sectionImageLabel.resize(p.width(), p.height())
+        self.sectionImageLabel.show()
 
     def typeChanged(self):
         """Change type of study."""
