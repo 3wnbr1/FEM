@@ -56,6 +56,7 @@ class App(QMainWindow, Ui_MainWindow):
     def modelChanged(self):
         """Change model on selection."""
         self.selectModelLabel.setHidden(True)
+        self.modelStatusLabel.setText("✅")
         self.model = eval(
             "models." + self.listWidget.currentItem().text() + '()')
         self.tabwidget.addTabFromList(self.model.types)
