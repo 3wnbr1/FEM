@@ -1,4 +1,4 @@
-#! /Users/ewen/anaconda3/bin/python
+#! /usr/bin/python3
 # coding: utf-8
 
 
@@ -13,8 +13,17 @@ import numpy as np
 import numpy.linalg as nl
 from numba import jit
 from math import sqrt
+from db import fem
 from modules.Computation import Matrix, DynamicArray, nodesCombination
-from modules import Material, Elements
+from modules import Elements
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+
+femEngine = create_engine('sqlite:///db/fem.db')
+fem.Base.metadata.bind = femEngine
+DBSession = sessionmaker()
+DBSession.configure(bind=femEngine)
 
 
 class Model:
@@ -24,7 +33,9 @@ class Model:
         """Init base class."""
         self.elements = []
         self.conditions = []
-        self.material = Material.Material()
+        self.session = DBSession()
+        self.material = self.session.query(fem.Materials).first()
+        self.section = self.session.query(fem.Sections).first()
 
         self._lenght = 1000  # default size is 1 meter
         self._I = (10 * 10**3) / 12  # h * b**3 / 12
@@ -36,6 +47,9 @@ class Model:
         """Set elements number and mesh."""
         self._nodes = n
         self.mesh()
+
+    def mesh(self):
+        pass
 
     @property
     def ddl(self):

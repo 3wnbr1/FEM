@@ -1,4 +1,4 @@
-#! /Users/ewen/anaconda3/bin/python
+#! /usr/bin/python3
 # coding: utf-8
 
 
@@ -20,7 +20,7 @@ class Bar:
         """Init."""
         self.index = index
         self.k = np.matrix([[1, -1], [-1, 1]])
-        self.k *= model.material.E * model.material.S * model._nodes / model._lenght
+        self.k *= model.material.E * model.section.S * model._nodes / model._lenght
 
 
 class Poutre:
@@ -32,7 +32,7 @@ class Poutre:
         self.index = index
         self.k = np.matrix([[12, 6 * self.lenght, -12, 6 * self.lenght], [6 * self.lenght, 4 * self.lenght**2, -6 * self.lenght, 2 * self.lenght**2],
                             [-12, -6 * self.lenght, 12, -6 * self.lenght], [6 * self.lenght, 2 * self.lenght**2, -6 * self.lenght, 4 * self.lenght**2]])
-        self.k = model._I * model.material.E / (self.lenght**3) * self.k
+        self.k = model.section.I * model.material.E / (self.lenght**3) * self.k
 
 
 class TreillisBar:
@@ -50,4 +50,4 @@ class TreillisBar:
         self.k.compose(self.A, 2, 2)
         self.k.compose(-1*self.A, 2, 0)
         self.k.compose(-1*self.A, 0, 2)
-        self.k *= model.material.E * model.material.S / self.lenght
+        self.k *= model.material.E * model.section.S / self.lenght

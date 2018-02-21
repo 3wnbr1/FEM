@@ -1,4 +1,4 @@
-#! /Users/ewen/anaconda3/bin/python
+#! /usr/bin/python3
 # coding: utf-8
 
 
@@ -14,6 +14,7 @@ import models
 from numpy import exp
 from PyQt5 import uic
 from PyQt5.QtWidgets import QMainWindow, QApplication, QProgressDialog, QFileDialog, QMessageBox
+from sqlalchemy import text
 
 
 def listModels(models=models):
@@ -39,6 +40,8 @@ class App(QMainWindow, Ui_MainWindow):
         self.elements_plainTextEdit.setVisible(False)
         self.elements_plainTextEdit.setPlainText("100")
         self.listWidget.addItems(listModels())
+        self.model = models.Model()
+        self.loadMaterials()
 
         self.listWidget.currentTextChanged.connect(self.modelChanged)
         self.tabwidget.Tabs.currentChanged.connect(self.typeChanged)
@@ -52,6 +55,10 @@ class App(QMainWindow, Ui_MainWindow):
         self.model = eval(
             "models." + self.listWidget.currentItem().text() + '()')
         self.tabwidget.addTabFromList(self.model.types)
+
+    def loadMaterials(self):
+        """Load materials from db."""
+        self.materials_comboBox.addItems([i[0] for i in self.model.session.execute(text('select Name from Materials'))])
 
     def typeChanged(self):
         """Change type of study."""
