@@ -19,7 +19,7 @@ class Materials(Base):
 
 
 class Sections(Base):
-    global h, b
+    global h, b, e
     __tablename__ = 'Sections'
     Name = Column(String(50), primary_key=True)
     raw_S = Column(String(250))
@@ -29,6 +29,7 @@ class Sections(Base):
     raw_Image = Column(LargeBinary)
     h = 10
     b = 10
+    e = 1
 
     @property
     def S(self):

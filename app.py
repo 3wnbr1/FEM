@@ -49,8 +49,10 @@ class App(QMainWindow, Ui_MainWindow):
 
         self.listWidget.currentTextChanged.connect(self.modelChanged)
         self.tabwidget.Tabs.currentChanged.connect(self.typeChanged)
-        self.materials_comboBox.currentTextChanged.connect(self.modelChanged)
-        self.elements_horizontalSlider.valueChanged.connect(self.elementsNumberChanged)
+        self.materials_comboBox.currentTextChanged.connect(self.materialChanged)
+        self.sections_comboBox.currentTextChanged.connect(self.sectionChanged)
+        self.elements_horizontalSlider.valueChanged.connect(
+            self.elementsNumberChanged)
         self.startComputationPushButton.clicked.connect(self.compute)
         self.pushButtonSave.clicked.connect(self.saveFigure)
 
@@ -64,15 +66,24 @@ class App(QMainWindow, Ui_MainWindow):
 
     def materialChanged(self):
         """Change material on selection."""
-        self.model.session.query(Materials).filter(Materials.Name == self.materials_comboBox.currentText()).first()
+        self.model.material = self.model.session.query(Materials).filter(
+            Materials.Name == self.materials_comboBox.currentText()).first()
+
+    def sectionChanged(self):
+        """Change section on selection."""
+        self.model.section = self.model.session.query(Sections).filter(
+            Sections.Name == self.sections_comboBox.currentText()).first()
+        self.loadSectionImage()
 
     def loadMaterials(self):
         """Load materials from db."""
-        self.materials_comboBox.addItems([i[0] for i in self.model.session.execute(text('select Name from Materials'))])
+        self.materials_comboBox.addItems(
+            [i[0] for i in self.model.session.execute(text('select Name from Materials'))])
 
     def loadSections(self):
         """Load scetion names from db."""
-        self.sections_comboBox.addItems([i[0] for i in self.model.session.execute(text('select Name from Sections'))])
+        self.sections_comboBox.addItems(
+            [i[0] for i in self.model.session.execute(text('select Name from Sections'))])
 
     def loadSectionImage(self):
         """Load image corresponding to section from db."""
@@ -103,7 +114,8 @@ class App(QMainWindow, Ui_MainWindow):
             if name[0] != "":
                 self.mpl.canvas.fig.savefig(name[0], dpi=300)
         except BaseException:
-            QMessageBox.warning(self, 'Avertissement', 'Le fichier n\'as pas pu etre enregistré')
+            QMessageBox.warning(self, 'Avertissement',
+                                'Le fichier n\'as pas pu etre enregistré')
 
     def compute(self):
         """Compute."""
