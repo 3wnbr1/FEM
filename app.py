@@ -16,6 +16,7 @@ from PyQt5 import uic
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QMainWindow, QApplication, QProgressDialog, QFileDialog, QMessageBox
 from sqlalchemy import text
+from db.fem import Materials, Sections
 
 
 def listModels(models=models):
@@ -48,9 +49,9 @@ class App(QMainWindow, Ui_MainWindow):
 
         self.listWidget.currentTextChanged.connect(self.modelChanged)
         self.tabwidget.Tabs.currentChanged.connect(self.typeChanged)
-        self.elements_horizontalSlider.valueChanged.connect(
-            self.elementsNumberChanged)
-        self.elements_horizontalSlider.sliderReleased.connect(self.compute)
+        self.materials_comboBox.currentTextChanged.connect(self.modelChanged)
+        self.elements_horizontalSlider.valueChanged.connect(self.elementsNumberChanged)
+        self.startComputationPushButton.clicked.connect(self.compute)
         self.pushButtonSave.clicked.connect(self.saveFigure)
 
     def modelChanged(self):
@@ -60,6 +61,10 @@ class App(QMainWindow, Ui_MainWindow):
         self.model = eval(
             "models." + self.listWidget.currentItem().text() + '()')
         self.tabwidget.addTabFromList(self.model.types)
+
+    def materialChanged(self):
+        """Change material on selection."""
+        self.model.session.query(Materials).filter(Materials.Name == self.materials_comboBox.currentText()).first()
 
     def loadMaterials(self):
         """Load materials from db."""
