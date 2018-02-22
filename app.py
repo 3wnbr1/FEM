@@ -47,6 +47,7 @@ class App(QMainWindow, Ui_MainWindow):
         self.loadSections()
         self.loadSectionImage()
 
+        self.dockWidget.topLevelChanged.connect(self.updateWindowSize)
         self.listWidget.currentTextChanged.connect(self.modelChanged)
         self.tabwidget.Tabs.currentChanged.connect(self.typeChanged)
         self.materials_comboBox.currentTextChanged.connect(self.materialChanged)
@@ -55,6 +56,13 @@ class App(QMainWindow, Ui_MainWindow):
             self.elementsNumberChanged)
         self.startComputationPushButton.clicked.connect(self.compute)
         self.pushButtonSave.clicked.connect(self.saveFigure)
+
+    def updateWindowSize(self, onTop):
+        """Update window size if dockWidget is on Top."""
+        if onTop:
+            self.resize(self.minimumSize())
+        else:
+            self.resize(self.maximumSize())
 
     def modelChanged(self):
         """Change model on selection."""
@@ -89,7 +97,7 @@ class App(QMainWindow, Ui_MainWindow):
         """Load image corresponding to section from db."""
         p = QPixmap()
         p.loadFromData(self.model.section.raw_Image)
-        p = p.scaled(64, 64)
+        p = p.scaled(32, 32)
         self.sectionImageLabel.setPixmap(p)
         self.sectionImageLabel.resize(p.width(), p.height())
         self.sectionImageLabel.show()

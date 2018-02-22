@@ -49,6 +49,7 @@ class Model:
         self.mesh()
 
     def mesh(self):
+        """Mesh method for referencing."""
         pass
 
     @property
