@@ -12,6 +12,8 @@ Base = declarative_base()
 
 
 class Materials(Base):
+    """Declarative base for Materials."""
+
     __tablename__ = 'Materials'
     Name = Column(String(50), primary_key=True)
     Description = Column(String(250))
@@ -19,6 +21,8 @@ class Materials(Base):
 
 
 class Sections(Base):
+    """Declarative base for Sections."""
+
     global h, b, e
     __tablename__ = 'Sections'
     Name = Column(String(50), primary_key=True)
@@ -33,8 +37,10 @@ class Sections(Base):
 
     @property
     def S(self):
+        """Return surface."""
         return eval(self.raw_S)
 
     @property
-    def I(self):
+    def IG(self):
+        """Return I."""
         return eval(self.raw_IG)

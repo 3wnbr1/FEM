@@ -32,7 +32,7 @@ class Poutre:
         self.index = index
         self.k = np.matrix([[12, 6 * self.lenght, -12, 6 * self.lenght], [6 * self.lenght, 4 * self.lenght**2, -6 * self.lenght, 2 * self.lenght**2],
                             [-12, -6 * self.lenght, 12, -6 * self.lenght], [6 * self.lenght, 2 * self.lenght**2, -6 * self.lenght, 4 * self.lenght**2]])
-        self.k = model.section.I * model.material.E / (self.lenght**3) * self.k
+        self.k = model.section.IG * model.material.E / (self.lenght**3) * self.k
 
 
 class TreillisBar:

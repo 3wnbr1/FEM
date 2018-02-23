@@ -18,8 +18,6 @@ from modules.Computation import Matrix, DynamicArray, nodesCombination
 from modules import Elements
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-import matplotlib.pyplot as plt
-from matplotlib.lines import Line2D
 
 
 femEngine = create_engine('sqlite:///db/fem.db')
