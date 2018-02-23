@@ -34,7 +34,6 @@ class Model:
     def __init__(self):
         """Init base class."""
         self.elements = []
-        self.conditions = []
         self.session = DBSession()
         self.material = self.session.query(fem.Materials).first()
         self.section = self.session.query(fem.Sections).first()

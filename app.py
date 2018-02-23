@@ -50,7 +50,6 @@ class App(QMainWindow, Ui_MainWindow):
 
         self.dockWidget.topLevelChanged.connect(self.updateWindowSize)
         self.listWidget.currentTextChanged.connect(self.modelChanged)
-        self.tabwidget.Tabs.currentChanged.connect(self.typeChanged)
         self.comboBoxMaterials.currentTextChanged.connect(self.materialChanged)
         self.comboBoxSections.currentTextChanged.connect(self.sectionChanged)
         self.horizontalSliderElements.valueChanged.connect(self.elementsNumberChanged)
@@ -74,9 +73,8 @@ class App(QMainWindow, Ui_MainWindow):
         self.groupBoxElements.setEnabled(True)
         self.groupBoxComputation.setEnabled(True)
         self.labelStatus1.setText("✅")
-        self.model = eval(
-            "models." + self.listWidget.currentItem().text() + '()')
-        self.tabwidget.addTabFromList(self.model.types)
+        self.model = eval("models." + self.listWidget.currentItem().text() + '()')
+        self.loadConditions()
 
     def materialChanged(self):
         """Change material on selection."""
@@ -89,6 +87,11 @@ class App(QMainWindow, Ui_MainWindow):
             Sections.Name == self.comboBoxSections.currentText()).first()
         self.loadSectionImage()
 
+    def elementsNumberChanged(self):
+        """Change in number of elements."""
+        self.lineEditElements.setText(
+            str(int(2**(self.horizontalSliderElements.value()))))
+
     def loadMaterials(self):
         """Load materials from db."""
         self.comboBoxMaterials.addItems(
@@ -98,6 +101,11 @@ class App(QMainWindow, Ui_MainWindow):
         """Load scetion names from db."""
         self.comboBoxSections.addItems(
             [i[0] for i in self.model.session.execute(text('select Name from Sections'))])
+
+    def loadConditions(self):
+        """Load initial conditions."""
+        self.comboBoxConditions.clear()
+        self.comboBoxConditions.addItems(self.model.types)
 
     def loadSectionImage(self):
         """Load image corresponding to section from db."""
@@ -112,19 +120,6 @@ class App(QMainWindow, Ui_MainWindow):
         """Plot rigidity matrix."""
         plt.matshow(self.model.K())
         plt.show()
-
-    def typeChanged(self):
-        """Change type of study."""
-        if self.tabwidget.Tabs.currentIndex() != -1:
-            self.model.elems(int(self.lineEditElements.text()))
-            self.model.solve(self.tabwidget.Tabs.currentIndex())
-            self.mpl.canvas.graph(self.model)
-
-    def elementsNumberChanged(self):
-        """Change in number of elements."""
-        self.lineEditElements.setText(
-            str(int(2**(self.horizontalSliderElements.value()))))
-        print(self.lineEditElements.text())
 
     def saveFigure(self):
         """Save figure."""
@@ -145,6 +140,9 @@ class App(QMainWindow, Ui_MainWindow):
                     name += '.xlsx'
                 wk = xlsxwriter.Workbook(name)
                 ws = wk.add_worksheet()
+                ws.write(0, 0, "Noeuds")
+                for line in range(1, self.model._nodes+1):
+                    ws.write(line, 0, line)
                 wk.close()
         except BaseException:
             QMessageBox.warning(self, 'Avertissement',
@@ -159,9 +157,9 @@ class App(QMainWindow, Ui_MainWindow):
         diag.setWindowTitle("Calcul en cours")
         diag.setLabelText("Resolution en cours...")
         diag.show()
-        self.model.elems(self.horizontalSliderElements.value())
+        self.model.elems(int(self.lineEditElements.text()))
         diag.show()
         QApplication.processEvents()
-        self.model.solve()
+        self.model.solve(self.comboBoxConditions.currentIndex())
+        self.mpl.canvas.graph(self.model)
         diag.reset()
-        self.typeChanged()

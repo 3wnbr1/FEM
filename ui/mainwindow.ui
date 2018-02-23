@@ -36,6 +36,9 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="MplWidget" name="mpl" native="true">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>0</x>
@@ -294,13 +297,13 @@ p, li { white-space: pre-wrap; }
      <property name="title">
       <string>Conditions aux limites</string>
      </property>
-     <widget class="TabOptionWidget" name="tabwidget" native="true">
+     <widget class="QComboBox" name="comboBoxConditions">
       <property name="geometry">
        <rect>
-        <x>0</x>
+        <x>10</x>
         <y>20</y>
-        <width>251</width>
-        <height>81</height>
+        <width>161</width>
+        <height>26</height>
        </rect>
       </property>
      </widget>
@@ -562,12 +565,6 @@ p, li { white-space: pre-wrap; }
    <class>MplWidget</class>
    <extends>QWidget</extends>
    <header location="global">mplwidget</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>TabOptionWidget</class>
-   <extends>QWidget</extends>
-   <header location="global">tabwidget</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
