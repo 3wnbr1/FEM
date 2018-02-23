@@ -220,11 +220,16 @@ class TreilliSimple(Model):
         """
         self._nodes = 4
         self.elements = []
-        self.elements.append(Elements.TreillisBar(self, [1, 2], 1, np.pi / 4))
-        self.elements.append(Elements.TreillisBar(self, [1, 3], sqrt(2), 0))
-        self.elements.append(Elements.TreillisBar(self, [2, 3], 1, 3 * np.pi / -4))
-        self.elements.append(Elements.TreillisBar(self, [2, 4], sqrt(2), 0))
-        self.elements.append(Elements.TreillisBar(self, [3, 4], 1, np.pi / 4))
+        self.elements.append(Elements.TreillisBar(
+            self, [1, 2], 100, np.pi / 4))
+        self.elements.append(Elements.TreillisBar(
+            self, [1, 3], 100 * sqrt(2), 0))
+        self.elements.append(Elements.TreillisBar(
+            self, [2, 3], 100, 3 * np.pi / -4))
+        self.elements.append(Elements.TreillisBar(
+            self, [2, 4], 100 * sqrt(2), 0))
+        self.elements.append(Elements.TreillisBar(
+            self, [3, 4], 100, np.pi / 4))
 
     @jit
     def K(self):
@@ -247,26 +252,31 @@ class TreilliSimple(Model):
         """Solve model."""
         K = self.K()
         self._F = DynamicArray([0] * K.shape[0])
-        self._K1 = K.remove_null(5).remove_null(1).remove_null(0)
-        self._F._null = [0, 1, 5]
-        self._F._array[-1] = -10
+        self._K1 = K.remove_null(3).remove_null(2).remove_null(1).remove_null(0)
+        self._F._null = [3, 2, 1, 0]
+        self._F._array[-1] = -100
         self._U = DynamicArray(nl.solve(self._K1, self._F.array()).tolist())
         self._U.arrayFromNull(self._F._null)
+
+    def nodesCoordinates(self):
+        """Return coordinates of the nodes."""
+        nodes = [[1, 0, 0]]
+        for startn in range(1, self._nodes + 1):
+            origin = nodes[startn - 1][1::]
+            for e in [i for i in self.elements if startn == i.nodes[0]]:
+                if e.nodes[1] not in [i[0] for i in nodes]:
+                    nodes.append([e.nodes[1], origin[0] + e.lenght *
+                                  np.cos(e.alpha), origin[0] + e.lenght * np.sin(e.alpha)])
+        return nodes
 
     @property
     def initial(self):
         """Initial."""
-        nodes = [[1, 0, 0]]
-        out = []
-        for startn in range(1, self._nodes+1):
-            origin = nodes[startn-1][1::]
-            for e in [i for i in self.elements if startn == i.nodes[0]]:
-                if e.nodes[1] not in [i[0] for i in nodes]:
-                    nodes.append([e.nodes[1], origin[0] + e.lenght*np.cos(e.alpha), origin[0] + e.lenght*np.sin(e.alpha)])
+        out, nodes = [], self.nodesCoordinates()
         for e in self.elements:
             s, n = e.nodes
-            print(s, n)
-            out.append([[nodes[s-1][1], nodes[n-1][1]], [nodes[s-1][2], nodes[n-1][2]]])
+            out.append([[nodes[s - 1][1], nodes[n - 1][1]],
+                        [nodes[s - 1][2], nodes[n - 1][2]]])
         return out
 
     @property
@@ -279,13 +289,11 @@ class TreilliSimple(Model):
         """Return conditions aux limites."""
         return ["Simple"]
 
+    @property
+    def legend(self):
+        """Graph legend."""
+        return {"title": "Treillis Simple", 'xtitle': r'Distance en $mm$', 'ytitle': r'Distance en $mm$'}
+
     def __repr__(self):
         """Repr."""
         return "Model TreilliSimple with %i-Dimension" % (self._D)
-
-
-if __name__ == '__main__':
-    import matplotlib.pyplot as plt
-
-    m = TreilliSimple()
-    m.mesh()

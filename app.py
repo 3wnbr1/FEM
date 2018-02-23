@@ -18,6 +18,7 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QMainWindow, QApplication, QProgressDialog, QFileDialog, QMessageBox
 from sqlalchemy import text
 from db.fem import Materials, Sections
+from matplotlib import pyplot as plt
 
 
 def listModels(models=models):
@@ -59,6 +60,7 @@ class App(QMainWindow, Ui_MainWindow):
         self.startComputationPushButton.clicked.connect(self.compute)
         self.pushButtonSave.clicked.connect(self.saveFigure)
         self.pushButtonExcel.clicked.connect(self.saveExcel)
+        self.plotMatrixPushButton.clicked.connect(self.plotMatrix)
 
     def updateWindowSize(self, onTop):
         """Update window size if dockWidget is on Top."""
@@ -70,6 +72,7 @@ class App(QMainWindow, Ui_MainWindow):
     def modelChanged(self):
         """Change model on selection."""
         self.selectModelLabel.setHidden(True)
+        self.plotMatrixPushButton.setEnabled(True)
         self.modelStatusLabel.setText("✅")
         self.model = eval(
             "models." + self.listWidget.currentItem().text() + '()')
@@ -104,6 +107,11 @@ class App(QMainWindow, Ui_MainWindow):
         self.sectionImageLabel.setPixmap(p)
         self.sectionImageLabel.resize(p.width(), p.height())
         self.sectionImageLabel.show()
+
+    def plotMatrix(self):
+        """Plot rigidity matrix."""
+        plt.matshow(self.model.K())
+        plt.show()
 
     def typeChanged(self):
         """Change type of study."""
