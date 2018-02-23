@@ -474,7 +474,7 @@ p, li { white-space: pre-wrap; }
        <string>Save Graph</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButtonSave_2">
+     <widget class="QPushButton" name="pushButtonExcel">
       <property name="geometry">
        <rect>
         <x>10</x>

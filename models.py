@@ -18,6 +18,8 @@ from modules.Computation import Matrix, DynamicArray, nodesCombination
 from modules import Elements
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
 
 
 femEngine = create_engine('sqlite:///db/fem.db')
@@ -220,8 +222,7 @@ class TreilliSimple(Model):
         self.elements = []
         self.elements.append(Elements.TreillisBar(self, [1, 2], 1, np.pi / 4))
         self.elements.append(Elements.TreillisBar(self, [1, 3], sqrt(2), 0))
-        self.elements.append(Elements.TreillisBar(
-            self, [2, 3], 1, 3 * np.pi / -4))
+        self.elements.append(Elements.TreillisBar(self, [2, 3], 1, 3 * np.pi / -4))
         self.elements.append(Elements.TreillisBar(self, [2, 4], sqrt(2), 0))
         self.elements.append(Elements.TreillisBar(self, [3, 4], 1, np.pi / 4))
 
@@ -255,11 +256,16 @@ class TreilliSimple(Model):
     @property
     def initial(self):
         """Initial."""
-        out = [[0], [0]]
+        nodes = [[1, 0, 0]]
+        out = []
+        for startn in range(1, self._nodes+1):
+            origin = nodes[startn-1][1::]
+            for e in [i for i in self.elements if startn == i.nodes[0]]:
+                if e.nodes[1] not in [i[0] for i in nodes]:
+                    nodes.append([e.nodes[1], origin[0] + e.lenght*np.cos(e.alpha), origin[0] + e.lenght*np.sin(e.alpha)])
         for e in self.elements:
-            print(e.nodes)
-            out[1].append(sum(out[1]) + e.lenght * np.sin(e.alpha))
-            out[0].append(sum(out[0]) + e.lenght * np.cos(e.alpha))
+            n = e.nodes
+            out.append(([nodes[n[0]-1][1], nodes[n[1]-1][1]], [nodes[n[0]-1][2], nodes[n[1]-1][2]]))
         return out
 
     @property

@@ -11,6 +11,7 @@ __email__ = "ewen.brun@ecam.fr"
 
 import ast
 import models
+import xlsxwriter
 from numpy import exp
 from PyQt5 import uic
 from PyQt5.QtGui import QPixmap
@@ -50,12 +51,14 @@ class App(QMainWindow, Ui_MainWindow):
         self.dockWidget.topLevelChanged.connect(self.updateWindowSize)
         self.listWidget.currentTextChanged.connect(self.modelChanged)
         self.tabwidget.Tabs.currentChanged.connect(self.typeChanged)
-        self.materials_comboBox.currentTextChanged.connect(self.materialChanged)
+        self.materials_comboBox.currentTextChanged.connect(
+            self.materialChanged)
         self.sections_comboBox.currentTextChanged.connect(self.sectionChanged)
         self.elements_horizontalSlider.valueChanged.connect(
             self.elementsNumberChanged)
         self.startComputationPushButton.clicked.connect(self.compute)
         self.pushButtonSave.clicked.connect(self.saveFigure)
+        self.pushButtonExcel.clicked.connect(self.saveExcel)
 
     def updateWindowSize(self, onTop):
         """Update window size if dockWidget is on Top."""
@@ -125,9 +128,23 @@ class App(QMainWindow, Ui_MainWindow):
             QMessageBox.warning(self, 'Avertissement',
                                 'Le fichier n\'as pas pu etre enregistré')
 
+    def saveExcel(self):
+        """Save data under excel file."""
+        try:
+            name = QFileDialog.getSaveFileName(self, 'Save File')[0]
+            if name != "":
+                if '.xlsx' not in name:
+                    name += '.xlsx'
+                wk = xlsxwriter.Workbook(name)
+                ws = wk.add_worksheet()
+                wk.close()
+        except BaseException:
+            QMessageBox.warning(self, 'Avertissement',
+                                'Le fichier n\'as pas pu etre enregistré')
+
     def compute(self):
         """Compute."""
-        diag = QProgressDialog(self)
+        diag=QProgressDialog(self)
         diag.setRange(0, 0)
         diag.setValue(0)
         diag.setModal(True)
