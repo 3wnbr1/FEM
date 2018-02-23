@@ -12,7 +12,6 @@ __email__ = "ewen.brun@ecam.fr"
 import ast
 import models
 import xlsxwriter
-from numpy import exp
 from PyQt5 import uic
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QMainWindow, QApplication, QProgressDialog, QFileDialog, QMessageBox
@@ -40,9 +39,9 @@ class App(QMainWindow, Ui_MainWindow):
         QMainWindow.__init__(self)
         Ui_MainWindow.__init__(self)
         self.setupUi(self)
-        self.elements_horizontalSlider.setVisible(False)
-        self.elements_plainTextEdit.setVisible(False)
-        self.elements_plainTextEdit.setPlainText("100")
+        self.horizontalSliderElements.setVisible(False)
+        self.lineEditElements.setVisible(False)
+        self.lineEditElements.setText("128")
         self.listWidget.addItems(listModels())
         self.model = models.Model()
         self.loadMaterials()
@@ -52,15 +51,13 @@ class App(QMainWindow, Ui_MainWindow):
         self.dockWidget.topLevelChanged.connect(self.updateWindowSize)
         self.listWidget.currentTextChanged.connect(self.modelChanged)
         self.tabwidget.Tabs.currentChanged.connect(self.typeChanged)
-        self.materials_comboBox.currentTextChanged.connect(
-            self.materialChanged)
-        self.sections_comboBox.currentTextChanged.connect(self.sectionChanged)
-        self.elements_horizontalSlider.valueChanged.connect(
-            self.elementsNumberChanged)
-        self.startComputationPushButton.clicked.connect(self.compute)
+        self.comboBoxMaterials.currentTextChanged.connect(self.materialChanged)
+        self.comboBoxSections.currentTextChanged.connect(self.sectionChanged)
+        self.horizontalSliderElements.valueChanged.connect(self.elementsNumberChanged)
+        self.pushButtonStartComputation.clicked.connect(self.compute)
         self.pushButtonSave.clicked.connect(self.saveFigure)
         self.pushButtonExcel.clicked.connect(self.saveExcel)
-        self.plotMatrixPushButton.clicked.connect(self.plotMatrix)
+        self.pushButtonPlotMatrix.clicked.connect(self.plotMatrix)
 
     def updateWindowSize(self, onTop):
         """Update window size if dockWidget is on Top."""
@@ -71,9 +68,12 @@ class App(QMainWindow, Ui_MainWindow):
 
     def modelChanged(self):
         """Change model on selection."""
-        self.selectModelLabel.setHidden(True)
-        self.plotMatrixPushButton.setEnabled(True)
-        self.modelStatusLabel.setText("✅")
+        self.labelSelectModel.setHidden(True)
+        self.pushButtonPlotMatrix.setEnabled(True)
+        self.groupBoxConditions.setEnabled(True)
+        self.groupBoxElements.setEnabled(True)
+        self.groupBoxComputation.setEnabled(True)
+        self.labelStatus1.setText("✅")
         self.model = eval(
             "models." + self.listWidget.currentItem().text() + '()')
         self.tabwidget.addTabFromList(self.model.types)
@@ -81,22 +81,22 @@ class App(QMainWindow, Ui_MainWindow):
     def materialChanged(self):
         """Change material on selection."""
         self.model.material = self.model.session.query(Materials).filter(
-            Materials.Name == self.materials_comboBox.currentText()).first()
+            Materials.Name == self.comboBoxMaterials.currentText()).first()
 
     def sectionChanged(self):
         """Change section on selection."""
         self.model.section = self.model.session.query(Sections).filter(
-            Sections.Name == self.sections_comboBox.currentText()).first()
+            Sections.Name == self.comboBoxSections.currentText()).first()
         self.loadSectionImage()
 
     def loadMaterials(self):
         """Load materials from db."""
-        self.materials_comboBox.addItems(
+        self.comboBoxMaterials.addItems(
             [i[0] for i in self.model.session.execute(text('select Name from Materials'))])
 
     def loadSections(self):
         """Load scetion names from db."""
-        self.sections_comboBox.addItems(
+        self.comboBoxSections.addItems(
             [i[0] for i in self.model.session.execute(text('select Name from Sections'))])
 
     def loadSectionImage(self):
@@ -104,9 +104,9 @@ class App(QMainWindow, Ui_MainWindow):
         p = QPixmap()
         p.loadFromData(self.model.section.raw_Image)
         p = p.scaled(32, 32)
-        self.sectionImageLabel.setPixmap(p)
-        self.sectionImageLabel.resize(p.width(), p.height())
-        self.sectionImageLabel.show()
+        self.labelSectionImage.setPixmap(p)
+        self.labelSectionImage.resize(p.width(), p.height())
+        self.labelSectionImage.show()
 
     def plotMatrix(self):
         """Plot rigidity matrix."""
@@ -116,15 +116,15 @@ class App(QMainWindow, Ui_MainWindow):
     def typeChanged(self):
         """Change type of study."""
         if self.tabwidget.Tabs.currentIndex() != -1:
-            self.model.elems(int(self.elements_plainTextEdit.toPlainText()))
+            self.model.elems(int(self.lineEditElements.text()))
             self.model.solve(self.tabwidget.Tabs.currentIndex())
             self.mpl.canvas.graph(self.model)
 
     def elementsNumberChanged(self):
         """Change in number of elements."""
-        self.elements_plainTextEdit.setPlainText(
-            str(int(exp(self.elements_horizontalSlider.value()))))
-        print(self.elements_plainTextEdit.toPlainText())
+        self.lineEditElements.setText(
+            str(int(2**(self.horizontalSliderElements.value()))))
+        print(self.lineEditElements.text())
 
     def saveFigure(self):
         """Save figure."""
@@ -152,14 +152,14 @@ class App(QMainWindow, Ui_MainWindow):
 
     def compute(self):
         """Compute."""
-        diag=QProgressDialog(self)
+        diag = QProgressDialog(self)
         diag.setRange(0, 0)
         diag.setValue(0)
         diag.setModal(True)
         diag.setWindowTitle("Calcul en cours")
         diag.setLabelText("Resolution en cours...")
         diag.show()
-        self.model.elems(self.elements_horizontalSlider.value())
+        self.model.elems(self.horizontalSliderElements.value())
         diag.show()
         QApplication.processEvents()
         self.model.solve()

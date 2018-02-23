@@ -50,7 +50,7 @@
       <verstretch>0</verstretch>
      </sizepolicy>
     </property>
-    <widget class="QTextEdit" name="selectModelLabel">
+    <widget class="QTextEdit" name="labelSelectModel">
      <property name="geometry">
       <rect>
        <x>140</x>
@@ -78,8 +78,8 @@
       <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.875pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'.SF NS Text'; font-size:36pt;&quot;&gt;Veuillez sélectionner un modèle de calcul&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'.SF NS Text'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:36pt;&quot;&gt;Veuillez sélectionner un modèle de calcul&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="cursorWidth">
       <number>0</number>
@@ -114,7 +114,7 @@ p, li { white-space: pre-wrap; }
     <number>1</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents">
-    <widget class="QGroupBox" name="groupBox">
+    <widget class="QGroupBox" name="groupBoxModel">
      <property name="geometry">
       <rect>
        <x>0</x>
@@ -131,7 +131,7 @@ p, li { white-space: pre-wrap; }
        <rect>
         <x>0</x>
         <y>20</y>
-        <width>251</width>
+        <width>256</width>
         <height>81</height>
        </rect>
       </property>
@@ -141,7 +141,7 @@ p, li { white-space: pre-wrap; }
        </font>
       </property>
      </widget>
-     <widget class="QLabel" name="modelStatusLabel">
+     <widget class="QLabel" name="labelStatus1">
       <property name="geometry">
        <rect>
         <x>230</x>
@@ -168,7 +168,7 @@ p, li { white-space: pre-wrap; }
       <enum>Qt::Horizontal</enum>
      </property>
     </widget>
-    <widget class="QGroupBox" name="groupBox_2">
+    <widget class="QGroupBox" name="groupBoxMaterial">
      <property name="geometry">
       <rect>
        <x>0</x>
@@ -180,7 +180,7 @@ p, li { white-space: pre-wrap; }
      <property name="title">
       <string>Matériau</string>
      </property>
-     <widget class="QComboBox" name="materials_comboBox">
+     <widget class="QComboBox" name="comboBoxMaterials">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -190,7 +190,7 @@ p, li { white-space: pre-wrap; }
        </rect>
       </property>
      </widget>
-     <widget class="QLabel" name="modelStatusLabel_2">
+     <widget class="QLabel" name="labelStatus2">
       <property name="geometry">
        <rect>
         <x>230</x>
@@ -217,7 +217,7 @@ p, li { white-space: pre-wrap; }
       <enum>Qt::Horizontal</enum>
      </property>
     </widget>
-    <widget class="QGroupBox" name="groupBox_3">
+    <widget class="QGroupBox" name="groupBoxSection">
      <property name="geometry">
       <rect>
        <x>0</x>
@@ -229,7 +229,7 @@ p, li { white-space: pre-wrap; }
      <property name="title">
       <string>Section</string>
      </property>
-     <widget class="QComboBox" name="sections_comboBox">
+     <widget class="QComboBox" name="comboBoxSections">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -239,7 +239,7 @@ p, li { white-space: pre-wrap; }
        </rect>
       </property>
      </widget>
-     <widget class="QLabel" name="modelStatusLabel_3">
+     <widget class="QLabel" name="labelStatus3">
       <property name="geometry">
        <rect>
         <x>230</x>
@@ -252,7 +252,7 @@ p, li { white-space: pre-wrap; }
        <string>✅</string>
       </property>
      </widget>
-     <widget class="QLabel" name="sectionImageLabel">
+     <widget class="QLabel" name="labelSectionImage">
       <property name="geometry">
        <rect>
         <x>20</x>
@@ -279,7 +279,10 @@ p, li { white-space: pre-wrap; }
       <enum>Qt::Horizontal</enum>
      </property>
     </widget>
-    <widget class="QGroupBox" name="groupBox_4">
+    <widget class="QGroupBox" name="groupBoxConditions">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>0</x>
@@ -315,7 +318,10 @@ p, li { white-space: pre-wrap; }
       <enum>Qt::Horizontal</enum>
      </property>
     </widget>
-    <widget class="QGroupBox" name="groupBox_5">
+    <widget class="QGroupBox" name="groupBoxElements">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>0</x>
@@ -327,7 +333,7 @@ p, li { white-space: pre-wrap; }
      <property name="title">
       <string>Selection du nombre d'éléments</string>
      </property>
-     <widget class="QCheckBox" name="elements_checkBox">
+     <widget class="QCheckBox" name="checkBoxElements">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -343,23 +349,23 @@ p, li { white-space: pre-wrap; }
        <bool>true</bool>
       </property>
      </widget>
-     <widget class="QSlider" name="elements_horizontalSlider">
+     <widget class="QSlider" name="horizontalSliderElements">
       <property name="enabled">
-       <bool>true</bool>
+       <bool>false</bool>
       </property>
       <property name="geometry">
        <rect>
         <x>70</x>
         <y>20</y>
-        <width>121</width>
+        <width>111</width>
         <height>22</height>
        </rect>
       </property>
       <property name="minimum">
-       <number>0</number>
+       <number>2</number>
       </property>
       <property name="maximum">
-       <number>8</number>
+       <number>12</number>
       </property>
       <property name="singleStep">
        <number>0</number>
@@ -368,41 +374,13 @@ p, li { white-space: pre-wrap; }
        <number>1</number>
       </property>
       <property name="value">
-       <number>6</number>
+       <number>7</number>
       </property>
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
      </widget>
-     <widget class="QPlainTextEdit" name="elements_plainTextEdit">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>200</x>
-        <y>20</y>
-        <width>51</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="verticalScrollBarPolicy">
-       <enum>Qt::ScrollBarAlwaysOff</enum>
-      </property>
-      <property name="horizontalScrollBarPolicy">
-       <enum>Qt::ScrollBarAlwaysOff</enum>
-      </property>
-      <property name="readOnly">
-       <bool>true</bool>
-      </property>
-      <property name="plainText">
-       <string>1000</string>
-      </property>
-      <property name="backgroundVisible">
-       <bool>false</bool>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="plotMatrixPushButton">
+     <widget class="QPushButton" name="pushButtonPlotMatrix">
       <property name="enabled">
        <bool>false</bool>
       </property>
@@ -418,21 +396,21 @@ p, li { white-space: pre-wrap; }
        <string>Matrice de rigidité</string>
       </property>
      </widget>
+     <widget class="QLineEdit" name="lineEditElements">
+      <property name="geometry">
+       <rect>
+        <x>190</x>
+        <y>20</y>
+        <width>61</width>
+        <height>21</height>
+       </rect>
+      </property>
+     </widget>
     </widget>
-    <widget class="QPushButton" name="startComputationPushButton">
-     <property name="geometry">
-      <rect>
-       <x>100</x>
-       <y>480</y>
-       <width>141</width>
-       <height>32</height>
-      </rect>
+    <widget class="QGroupBox" name="groupBoxResults">
+     <property name="enabled">
+      <bool>false</bool>
      </property>
-     <property name="text">
-      <string>Lancer les calculs</string>
-     </property>
-    </widget>
-    <widget class="QGroupBox" name="groupBox_6">
      <property name="geometry">
       <rect>
        <x>0</x>
@@ -444,7 +422,7 @@ p, li { white-space: pre-wrap; }
      <property name="title">
       <string>Resultats</string>
      </property>
-     <widget class="QComboBox" name="results_comboBox">
+     <widget class="QComboBox" name="comboBoxResults">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -464,7 +442,10 @@ p, li { white-space: pre-wrap; }
        </property>
       </item>
      </widget>
-     <widget class="QLabel" name="modelStatusLabel_6">
+     <widget class="QLabel" name="labelStatus5">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>230</x>
@@ -474,7 +455,7 @@ p, li { white-space: pre-wrap; }
        </rect>
       </property>
       <property name="text">
-       <string>✅</string>
+       <string/>
       </property>
      </widget>
      <widget class="QPushButton" name="pushButtonSave">
@@ -517,6 +498,61 @@ p, li { white-space: pre-wrap; }
       <enum>Qt::Horizontal</enum>
      </property>
     </widget>
+    <widget class="QGroupBox" name="groupBoxComputation">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>480</y>
+       <width>251</width>
+       <height>101</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Calculs</string>
+     </property>
+     <widget class="QPushButton" name="pushButtonStartComputation">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>20</y>
+        <width>141</width>
+        <height>32</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Lancer les calculs</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="labelComputationInfo">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>50</y>
+        <width>60</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>TextLabel</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="Line" name="line_7">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>470</y>
+       <width>251</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
    </widget>
   </widget>
  </widget>
@@ -538,9 +574,9 @@ p, li { white-space: pre-wrap; }
  <resources/>
  <connections>
   <connection>
-   <sender>elements_checkBox</sender>
+   <sender>checkBoxElements</sender>
    <signal>clicked(bool)</signal>
-   <receiver>elements_horizontalSlider</receiver>
+   <receiver>horizontalSliderElements</receiver>
    <slot>setHidden(bool)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -554,18 +590,50 @@ p, li { white-space: pre-wrap; }
    </hints>
   </connection>
   <connection>
-   <sender>elements_checkBox</sender>
+   <sender>pushButtonStartComputation</sender>
    <signal>clicked(bool)</signal>
-   <receiver>elements_plainTextEdit</receiver>
+   <receiver>groupBoxResults</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>70</x>
+     <y>537</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>125</x>
+     <y>677</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBoxElements</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>lineEditElements</receiver>
    <slot>setHidden(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>35</x>
-     <y>349</y>
+     <y>431</y>
     </hint>
     <hint type="destinationlabel">
-     <x>245</x>
-     <y>350</y>
+     <x>220</x>
+     <y>432</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBoxElements</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>horizontalSliderElements</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>35</x>
+     <y>431</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>125</x>
+     <y>432</y>
     </hint>
    </hints>
   </connection>
