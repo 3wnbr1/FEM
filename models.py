@@ -264,8 +264,9 @@ class TreilliSimple(Model):
                 if e.nodes[1] not in [i[0] for i in nodes]:
                     nodes.append([e.nodes[1], origin[0] + e.lenght*np.cos(e.alpha), origin[0] + e.lenght*np.sin(e.alpha)])
         for e in self.elements:
-            n = e.nodes
-            out.append(([nodes[n[0]-1][1], nodes[n[1]-1][1]], [nodes[n[0]-1][2], nodes[n[1]-1][2]]))
+            s, n = e.nodes
+            print(s, n)
+            out.append([[nodes[s-1][1], nodes[n-1][1]], [nodes[s-1][2], nodes[n-1][2]]])
         return out
 
     @property

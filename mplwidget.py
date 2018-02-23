@@ -38,7 +38,11 @@ class MplCanvas(FigureCanvasQTAgg):
         self.ax.set_title(model.legend['title'])
         lc = self.colorline(model.deformee[0], model.deformee[1], np.absolute(model.deformee[1]))
         self.fig.colorbar(lc)
-        self.ax.plot(model.initial[0], model.initial[1], label="Inital", linewidth=3, color='k')
+        if len(model.initial) == 2:
+            self.ax.plot(model.initial[0], model.initial[1], linewidth=3, color='k')
+        else:
+            for line in model.initial:
+                self.ax.plot(line[0], line[1], linewidth=3, color='k')
         self.ax.set_xlabel(model.legend['xtitle'])
         self.ax.set_ylabel(model.legend['ytitle'])
         self.draw()
