@@ -37,7 +37,8 @@ class MplCanvas(FigureCanvasQTAgg):
         self.ax = self.fig.add_subplot(111)
         self.ax.set_title(model.legend['title'])
         lc = self.colorline(model.deformee[0], model.deformee[1], np.absolute(model.deformee[1]))
-        self.fig.colorbar(lc)
+        cbar = self.fig.colorbar(lc)
+        cbar.ax.set_title(r"Déformation en $mm$")
         if len(model.initial) == 2:
             self.ax.plot(model.initial[0], model.initial[1], linewidth=3, color='k')
         else:

@@ -124,7 +124,7 @@ class PoutreEnTraction(Model):
     @property
     def types(self):
         """Return conditions aux limites."""
-        return ["Traction", "Compression"]
+        return ["Traction", "Traction + Poid", "Compression", "Compression + Poid"]
 
     @property
     def legend(self):
@@ -182,7 +182,7 @@ class PoutreEnFlexion(Model):
     @property
     def types(self):
         """Return conditions aux limites."""
-        return ["Extremité", "Central", "Autre"]
+        return ["Encastrée et libre", "Encastrée et glissière", "Encastrée et ponctuelle"]
 
     @property
     def legend(self):
@@ -284,7 +284,7 @@ class TreilliSimple(Model):
     @property
     def types(self):
         """Return conditions aux limites."""
-        return ["Simple"]
+        return ["Treillis simple"]
 
     @property
     def legend(self):
