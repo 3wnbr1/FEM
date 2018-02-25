@@ -52,6 +52,7 @@ class App(QMainWindow, Ui_MainWindow):
         self.listWidget.currentTextChanged.connect(self.modelChanged)
         self.comboBoxMaterials.currentTextChanged.connect(self.materialChanged)
         self.comboBoxSections.currentTextChanged.connect(self.sectionChanged)
+        self.comboBoxResults.currentTextChanged.connect(self.updateGraph)
         self.horizontalSliderElements.valueChanged.connect(self.elementsNumberChanged)
         self.pushButtonStartComputation.clicked.connect(self.compute)
         self.pushButtonSave.clicked.connect(self.saveFigure)
@@ -161,5 +162,9 @@ class App(QMainWindow, Ui_MainWindow):
         diag.show()
         QApplication.processEvents()
         self.model.solve(self.comboBoxConditions.currentIndex())
-        self.mpl.canvas.graph(self.model, self.comboBoxResults.currentIndex())
         diag.reset()
+        self.updateGraph()
+
+    def updateGraph(self):
+        """Update graphs."""
+        self.mpl.canvas.graph(self.model, self.comboBoxResults.currentIndex())

@@ -18,6 +18,11 @@ class Materials(Base):
     Name = Column(String(50), primary_key=True)
     Description = Column(String(250))
     E = Column(Integer)
+    rho = Column(Integer)
+
+    def __repr__(self):
+        """repr."""
+        return "<Materiau %s>" % self.Description
 
 
 class Sections(Base):
@@ -44,3 +49,7 @@ class Sections(Base):
     def IG(self):
         """Return I."""
         return eval(self.raw_IG)
+
+    def __repr__(self):
+        """Repr."""
+        return "<Section %s>" % self.Name
