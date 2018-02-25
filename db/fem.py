@@ -28,7 +28,6 @@ class Materials(Base):
 class Sections(Base):
     """Declarative base for Sections."""
 
-    global h, b, e
     __tablename__ = 'Sections'
     Name = Column(String(50), primary_key=True)
     raw_S = Column(String(250))
@@ -36,6 +35,7 @@ class Sections(Base):
     raw_IZ = Column(String(250))
     raw_IG = Column(String(250))
     raw_Image = Column(LargeBinary)
+    has_thickness = Column(Integer)
     h = 10
     b = 10
     e = 1
@@ -43,11 +43,13 @@ class Sections(Base):
     @property
     def S(self):
         """Return surface."""
+        h, b, e = self.h, self.b, self.e
         return eval(self.raw_S)
 
     @property
     def IG(self):
         """Return I."""
+        h, b, e = self.h, self.b, self.e
         return eval(self.raw_IG)
 
     def __repr__(self):

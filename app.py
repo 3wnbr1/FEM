@@ -18,6 +18,7 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QProgressDialog, QFileDia
 from sqlalchemy import text
 from db.fem import Materials, Sections
 from matplotlib import pyplot as plt
+from time import perf_counter
 
 
 def listModels(models=models):
@@ -86,6 +87,12 @@ class App(QMainWindow, Ui_MainWindow):
         """Change section on selection."""
         self.model.section = self.model.session.query(Sections).filter(
             Sections.Name == self.comboBoxSections.currentText()).first()
+        if self.model.section.has_thickness:
+            self.labelThick.setDisabled(False)
+            self.doubleSpinBoxThick.setDisabled(False)
+        else:
+            self.labelThick.setDisabled(True)
+            self.doubleSpinBoxThick.setDisabled(True)
         self.loadSectionImage()
 
     def elementsNumberChanged(self):
@@ -158,13 +165,24 @@ class App(QMainWindow, Ui_MainWindow):
         diag.setWindowTitle("Calcul en cours")
         diag.setLabelText("Resolution en cours...")
         diag.show()
+        tm = perf_counter()
+        self.updateSection()
         self.model.elems(int(self.lineEditElements.text()))
         diag.show()
         QApplication.processEvents()
-        self.model.solve(self.comboBoxConditions.currentIndex())
+        ts = perf_counter()
+        self.model.solve(self.comboBoxConditions.currentIndex(), self.doubleSpinBoxEffort.value())
+        at = perf_counter()
         diag.reset()
+        self.labelComputationInfo.setText("Temps de calcul %f s" % (at-tm))
         self.updateGraph()
 
     def updateGraph(self):
         """Update graphs."""
         self.mpl.canvas.graph(self.model, self.comboBoxResults.currentIndex())
+
+    def updateSection(self):
+        """Update section dimensions."""
+        self.model.section.h = self.doubleSpinBoxTall.value()
+        self.model.section.b = self.doubleSpinBoxWide.value()
+        self.model.section.e = self.doubleSpinBoxThick.value()

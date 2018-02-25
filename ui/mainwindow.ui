@@ -88,6 +88,8 @@ p, li { white-space: pre-wrap; }
       <number>0</number>
      </property>
     </widget>
+    <zorder>labelSelectModel</zorder>
+    <zorder>labelComputationInfo</zorder>
    </widget>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -226,7 +228,7 @@ p, li { white-space: pre-wrap; }
        <x>0</x>
        <y>170</y>
        <width>251</width>
-       <height>91</height>
+       <height>121</height>
       </rect>
      </property>
      <property name="title">
@@ -258,14 +260,125 @@ p, li { white-space: pre-wrap; }
      <widget class="QLabel" name="labelSectionImage">
       <property name="geometry">
        <rect>
-        <x>20</x>
-        <y>50</y>
-        <width>51</width>
+        <x>15</x>
+        <y>55</y>
+        <width>46</width>
         <height>16</height>
        </rect>
       </property>
       <property name="text">
-       <string>Section</string>
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="labelWide">
+      <property name="geometry">
+       <rect>
+        <x>65</x>
+        <y>55</y>
+        <width>101</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Largeur en mm</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="labelTall">
+      <property name="geometry">
+       <rect>
+        <x>65</x>
+        <y>75</y>
+        <width>101</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Hauteur en mm</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="labelThick">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>65</x>
+        <y>95</y>
+        <width>111</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Epaisseur en mm</string>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="doubleSpinBoxWide">
+      <property name="geometry">
+       <rect>
+        <x>180</x>
+        <y>50</y>
+        <width>68</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="minimum">
+       <double>1.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>1000.000000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>1.000000000000000</double>
+      </property>
+      <property name="value">
+       <double>10.000000000000000</double>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="doubleSpinBoxTall">
+      <property name="geometry">
+       <rect>
+        <x>180</x>
+        <y>70</y>
+        <width>68</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="minimum">
+       <double>1.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>1000.000000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>1.000000000000000</double>
+      </property>
+      <property name="value">
+       <double>10.000000000000000</double>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="doubleSpinBoxThick">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>180</x>
+        <y>90</y>
+        <width>68</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="minimum">
+       <double>1.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>1000.000000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>1.000000000000000</double>
+      </property>
+      <property name="value">
+       <double>1.000000000000000</double>
       </property>
      </widget>
     </widget>
@@ -273,7 +386,7 @@ p, li { white-space: pre-wrap; }
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>260</y>
+       <y>290</y>
        <width>251</width>
        <height>20</height>
       </rect>
@@ -289,7 +402,7 @@ p, li { white-space: pre-wrap; }
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>270</y>
+       <y>300</y>
        <width>251</width>
        <height>101</height>
       </rect>
@@ -302,9 +415,54 @@ p, li { white-space: pre-wrap; }
        <rect>
         <x>10</x>
         <y>20</y>
-        <width>161</width>
+        <width>181</width>
         <height>26</height>
        </rect>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="checkBoxReparti">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>15</x>
+        <y>70</y>
+        <width>71</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Réparti</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="labelEffort">
+      <property name="geometry">
+       <rect>
+        <x>15</x>
+        <y>50</y>
+        <width>111</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Effort en Newtons</string>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="doubleSpinBoxEffort">
+      <property name="geometry">
+       <rect>
+        <x>140</x>
+        <y>45</y>
+        <width>81</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="maximum">
+       <double>1000.000000000000000</double>
+      </property>
+      <property name="value">
+       <double>10.000000000000000</double>
       </property>
      </widget>
     </widget>
@@ -312,7 +470,7 @@ p, li { white-space: pre-wrap; }
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>370</y>
+       <y>400</y>
        <width>251</width>
        <height>20</height>
       </rect>
@@ -328,7 +486,7 @@ p, li { white-space: pre-wrap; }
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>380</y>
+       <y>410</y>
        <width>251</width>
        <height>91</height>
       </rect>
@@ -353,9 +511,6 @@ p, li { white-space: pre-wrap; }
       </property>
      </widget>
      <widget class="QSlider" name="horizontalSliderElements">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
       <property name="geometry">
        <rect>
         <x>70</x>
@@ -508,9 +663,9 @@ p, li { white-space: pre-wrap; }
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>480</y>
+       <y>510</y>
        <width>251</width>
-       <height>101</height>
+       <height>71</height>
       </rect>
      </property>
      <property name="title">
@@ -534,12 +689,12 @@ p, li { white-space: pre-wrap; }
        <rect>
         <x>10</x>
         <y>50</y>
-        <width>60</width>
+        <width>241</width>
         <height>16</height>
        </rect>
       </property>
       <property name="text">
-       <string>TextLabel</string>
+       <string/>
       </property>
      </widget>
     </widget>
@@ -547,7 +702,7 @@ p, li { white-space: pre-wrap; }
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>470</y>
+       <y>500</y>
        <width>251</width>
        <height>20</height>
       </rect>
@@ -614,22 +769,6 @@ p, li { white-space: pre-wrap; }
     </hint>
     <hint type="destinationlabel">
      <x>220</x>
-     <y>432</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>checkBoxElements</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>horizontalSliderElements</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>35</x>
-     <y>431</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>125</x>
      <y>432</y>
     </hint>
    </hints>

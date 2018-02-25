@@ -105,10 +105,10 @@ class PoutreEnTraction(Model):
             self.elements.append(Elements.Bar(self, i))
 
     @jit
-    def solve(self, selected=0):
+    def solve(self, selected=0, effort=10):
         """Solve model."""
         self._F = DynamicArray([0] * self.K().shape[0])
-        self._F._array[-1] = 10
+        self._F._array[-1] = effort
         self._F._null = [0]
         self._U = nl.solve(self.K().remove_null(0), self._F.array())
         self._U = np.concatenate([[0], self._U])
@@ -154,23 +154,23 @@ class PoutreEnFlexion(Model):
         for i in range(0, self._nodes):
             self.elements.append(Elements.Poutre(self, i))
 
-    def solve(self, selected=0):
+    def solve(self, selected=0, effort=10, reparti=False):
         """Solve model."""
         K = self.K()
         self._F = DynamicArray([0] * K.shape[0])
         if selected == 0:
             self._K1 = K.remove_null(1).remove_null(0)
             self._F._null = [0, 1]
-            self._F._array[-2] = -10
+            self._F._array[-2] = -1*effort
         elif selected == 1:
             self._K1 = K.remove_null(self._nodes * 2 - 1).remove_null(
                 self._nodes * 2 - 1).remove_null(1).remove_null(0)
             self._F._null = [-1, -1, 1, 0]
-            self._F._array[self._nodes] = -10
+            self._F._array[self._nodes] = -1*effort
         elif selected == 2:
             self._K1 = K.remove_null(K.shape[0] - 2).remove_null(0)
             self._F._null = [0, -2]
-            self._F._array[len(self._F._array) // 2 + 1] = -10
+            self._F._array[len(self._F._array) // 2 + 1] = -1*effort
         self._U = DynamicArray(nl.solve(self._K1, self._F.array()).tolist())
         self._U.arrayFromNull(self._F._null)
 
@@ -182,7 +182,7 @@ class PoutreEnFlexion(Model):
     @property
     def types(self):
         """Return conditions aux limites."""
-        return ["Encastrée et libre", "Encastrée et glissière", "Encastrée et ponctuelle"]
+        return ["Encastrée et libre", "Encastrée et glissière", "Rotule et ponctuelle"]
 
     @property
     def legend(self):
@@ -245,13 +245,13 @@ class TreilliSimple(Model):
                     K[np.ix_([xx, xx + 1], [yy, yy + 1])] += k
         return K
 
-    def solve(self, selected=0):
+    def solve(self, selected=0, effort=10):
         """Solve model."""
         K = self.K()
         self._F = DynamicArray([0] * K.shape[0])
         self._K1 = K.remove_null(3).remove_null(2).remove_null(1).remove_null(0)
         self._F._null = [3, 2, 1, 0]
-        self._F._array[-1] = -100
+        self._F._array[-1] = -1*effort
         self._U = DynamicArray(nl.solve(self._K1, self._F.array()).tolist())
         self._U.arrayFromNull(self._F._null)
 
