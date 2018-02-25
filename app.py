@@ -161,5 +161,5 @@ class App(QMainWindow, Ui_MainWindow):
         diag.show()
         QApplication.processEvents()
         self.model.solve(self.comboBoxConditions.currentIndex())
-        self.mpl.canvas.graph(self.model)
+        self.mpl.canvas.graph(self.model, self.comboBoxResults.currentIndex())
         diag.reset()

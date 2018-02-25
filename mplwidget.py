@@ -31,14 +31,17 @@ class MplCanvas(FigureCanvasQTAgg):
             self, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         FigureCanvasQTAgg.updateGeometry(self)
 
-    def graph(self, model):
+    def graph(self, model, t=0):
         """Plot deformée."""
         self.fig.clf()
         self.ax = self.fig.add_subplot(111)
         self.ax.set_title(model.legend['title'])
         lc = self.colorline(model.deformee[0], model.deformee[1], np.absolute(model.deformee[1]))
         cbar = self.fig.colorbar(lc)
-        cbar.ax.set_title(r"Déformation en $mm$")
+        if t == 0:
+            cbar.ax.set_title(r"Déformation en $mm$")
+        elif t == 1:
+            cbar.ax.set_title(r"Contraintes en $MPa$")
         if len(model.initial) == 2:
             self.ax.plot(model.initial[0], model.initial[1], linewidth=3, color='k')
         else:
