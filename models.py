@@ -161,16 +161,16 @@ class PoutreEnFlexion(Model):
         if selected == 0:
             self._K1 = K.remove_null(1).remove_null(0)
             self._F._null = [0, 1]
-            self._F._array[-2] = -1*effort
+            self._F._array[-2] = -1 * effort
         elif selected == 1:
             self._K1 = K.remove_null(self._nodes * 2 - 1).remove_null(
                 self._nodes * 2 - 1).remove_null(1).remove_null(0)
             self._F._null = [-1, -1, 1, 0]
-            self._F._array[self._nodes] = -1*effort
+            self._F._array[self._nodes] = -1 * effort
         elif selected == 2:
             self._K1 = K.remove_null(K.shape[0] - 2).remove_null(0)
             self._F._null = [0, -2]
-            self._F._array[len(self._F._array) // 2 + 1] = -1*effort
+            self._F._array[len(self._F._array) // 2 + 1] = -1 * effort
         self._U = DynamicArray(nl.solve(self._K1, self._F.array()).tolist())
         self._U.arrayFromNull(self._F._null)
 
@@ -207,51 +207,73 @@ class TreilliSimple(Model):
         self._D = 2
 
     @jit
-    def mesh(self):
+    def mesh(self, index=0):
         r"""
         Mesh model.
 
-          2---4
-         / \ /
-        1---3
+          3           2---4
+         / \    or   / \ /
+        1---2       1---3
         """
-        self._nodes = 4
-        self.elements = []
-        self.elements.append(Elements.TreillisBar(
-            self, [1, 2], 100, np.pi / 4))
-        self.elements.append(Elements.TreillisBar(
-            self, [1, 3], 100 * sqrt(2), 0))
-        self.elements.append(Elements.TreillisBar(
-            self, [2, 3], 100, 3 * np.pi / -4))
-        self.elements.append(Elements.TreillisBar(
-            self, [2, 4], 100 * sqrt(2), 0))
-        self.elements.append(Elements.TreillisBar(
-            self, [3, 4], 100, np.pi / 4))
+        if index is 0:
+            self._nodes = 3
+            self.elements.append(Elements.TreillisBar(
+                self, [1, 2], sqrt(2) * 100, 0))
+            self.elements.append(Elements.TreillisBar(
+                self, [1, 3], 100, np.pi / 4))
+            self.elements.append(Elements.TreillisBar(
+                self, [2, 3], 100, 3 * np.pi / 4))
+        else:
+            self._nodes = 4
+            self.elements = []
+            self.elements.append(Elements.TreillisBar(
+                self, [1, 2], 100, np.pi / 4))
+            self.elements.append(Elements.TreillisBar(
+                self, [1, 3], 100 * sqrt(2), 0))
+            self.elements.append(Elements.TreillisBar(
+                self, [2, 3], 100, 3 * np.pi / -4))
+            self.elements.append(Elements.TreillisBar(
+                self, [2, 4], 100 * sqrt(2), 0))
+            self.elements.append(Elements.TreillisBar(
+                self, [3, 4], 100, np.pi / 4))
 
     @jit
-    def K(self):
+    def K(self, index=0):
         """Return rigidity matrix."""
         K = Matrix((self._nodes) * 2, (self._nodes) * 2)
-        x, y = 0, 0
-        for e in self.elements[0::2]:
-            K.compose(e.k, 2 * x, 2 * y)
-            x, y = x + 1, y + 1
-        for e in self.elements[1::2]:
-            c = nodesCombination(e.nodes)
+        if index == 0:
+            K.compose(self.elements[0].k, 0, 0)
+            K.compose(self.elements[2].k, 2, 2)
             for x in range(0, 4, 2):
                 for y in range(0, 4, 2):
-                    k = e.k[np.ix_([x, x + 1], [y, y + 1])]
-                    xx, yy = next(c)
-                    K[np.ix_([xx, xx + 1], [yy, yy + 1])] += k
+                    K.compose(self.elements[1].k[np.ix_([x, x + 1], [y, y + 1])], x, y)
+        else:
+            x, y = 0, 0
+            for e in self.elements[0::2]:
+                K.compose(e.k, 2 * x, 2 * y)
+                x, y = x + 1, y + 1
+            for e in self.elements[1::2]:
+                c = nodesCombination(e.nodes)
+                for x in range(0, 4, 2):
+                    for y in range(0, 4, 2):
+                        k = e.k[np.ix_([x, x + 1], [y, y + 1])]
+                        xx, yy = next(c)
+                        K[np.ix_([xx, xx + 1], [yy, yy + 1])] += k
         return K
 
     def solve(self, selected=0, effort=10):
         """Solve model."""
         K = self.K()
         self._F = DynamicArray([0] * K.shape[0])
-        self._K1 = K.remove_null(3).remove_null(2).remove_null(1).remove_null(0)
-        self._F._null = [3, 2, 1, 0]
-        self._F._array[-1] = -1*effort
+        if selected == 0:
+            self._K1 = K.remove_null(4).remove_null(1).remove_null(0)
+            self._F._null = [4, 1, 0]
+            self._F._array[-1] = -1 * effort
+            print(nl.solve(self._K1, self._F.array()))
+        else:
+            self._K1 = K.remove_null(3).remove_null(2).remove_null(1).remove_null(0)
+            self._F._null = [3, 2, 1, 0]
+            self._F._array[-1] = -1 * effort
         self._U = DynamicArray(nl.solve(self._K1, self._F.array()).tolist())
         self._U.arrayFromNull(self._F._null)
 
@@ -294,3 +316,9 @@ class TreilliSimple(Model):
     def __repr__(self):
         """Repr."""
         return "Model TreilliSimple with %i-Dimension" % (self._D)
+
+
+if __name__ == '__main__':
+    import matplotlib.pyplot as plt
+
+    model = TreilliSimple()
