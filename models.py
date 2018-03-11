@@ -107,18 +107,21 @@ class PoutreEnTraction(Model):
     @jit
     def solve(self, selected=0, effort=10):
         """Solve model."""
-        self._F = DynamicArray([0] * self.K().shape[0])
-        self._F._array[-1] = effort
-        self._F._null = [0]
-        self._U = nl.solve(self.K().remove_null(0), self._F.array())
-        self._U = np.concatenate([[0], self._U])
-        self._U = self._U.reshape(len(self._U), 1)
+        K = self.K()
+        self._K1 = K.remove_null(0)
+        self._F = DynamicArray([0] * K.shape[0])
+        if selected == 0:
+            self._F._array[-1] = effort
+            self._F._null = [0]
+        self._U = DynamicArray(nl.solve(self._K1, self._F.array()).tolist())
+        self._U.arrayFromNull(self._F._null)
+        self._FR = np.dot(K, self._U._array)
 
     @property
     def deformee(self):
         """Return deformée."""
         x = np.linspace(0, self._lenght, self._nodes + 1)
-        y = np.array(self._U.T[0])
+        y = np.array(self._U._array)
         return [x, y]
 
     @property
@@ -316,9 +319,3 @@ class TreilliSimple(Model):
     def __repr__(self):
         """Repr."""
         return "Model TreilliSimple with %i-Dimension" % (self._D)
-
-
-if __name__ == '__main__':
-    import matplotlib.pyplot as plt
-
-    model = TreilliSimple()

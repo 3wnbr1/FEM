@@ -25,7 +25,7 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     splashscreen = QSplashScreen(QPixmap('ui/splash.jpg'))
     splashscreen.showMessage(
-        "Chargement de l'interface...\n\nCrée dans le cadre des TIPE 2017 - 2018\nPar Ewen BRUN et Pierre HAON\nClasses Preparatoires à l'ECAM")
+        "Chargement de l'interface...\n\nCrée dans le cadre des TIPE 2017 - 2018\nPar Ewen BRUN et Pierre HAON\nClasses Préparatoires à l'ECAM Lyon")
     splashscreen.show()
     window = App()
     splashscreen.finish(window)
