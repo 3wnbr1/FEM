@@ -115,7 +115,7 @@ class PoutreEnTraction(Model):
             self._F._null = [0]
         self._U = DynamicArray(nl.solve(self._K1, self._F.array()).tolist())
         self._U.arrayFromNull(self._F._null)
-        self._FR = np.dot(K, self._U._array)
+        self._FR = np.asarray(np.dot(K, self._U._array))[0]
 
     @property
     def deformee(self):
@@ -123,6 +123,14 @@ class PoutreEnTraction(Model):
         x = np.linspace(0, self._lenght, self._nodes + 1)
         y = np.array(self._U._array)
         return [x, y]
+
+    @property
+    def contraintes(self):
+        """Contraintes."""
+        F = [2*abs(self._FR[0])]
+        for i in range(len(self._FR)):
+            F.append(abs(F[i - 1]))
+        return np.array(F)/self.section.S
 
     @property
     def types(self):
@@ -176,6 +184,7 @@ class PoutreEnFlexion(Model):
             self._F._array[len(self._F._array) // 2 + 1] = -1 * effort
         self._U = DynamicArray(nl.solve(self._K1, self._F.array()).tolist())
         self._U.arrayFromNull(self._F._null)
+        self._FR = np.asarray(np.dot(K, self._U._array))[0]
 
     @property
     def deformee(self):
@@ -249,7 +258,8 @@ class TreilliSimple(Model):
             K.compose(self.elements[2].k, 2, 2)
             for x in range(0, 4, 2):
                 for y in range(0, 4, 2):
-                    K.compose(self.elements[1].k[np.ix_([x, x + 1], [y, y + 1])], x, y)
+                    K.compose(self.elements[1].k[np.ix_(
+                        [x, x + 1], [y, y + 1])], x, y)
         else:
             x, y = 0, 0
             for e in self.elements[0::2]:
@@ -274,11 +284,13 @@ class TreilliSimple(Model):
             self._F._array[-1] = -1 * effort
             print(nl.solve(self._K1, self._F.array()))
         else:
-            self._K1 = K.remove_null(3).remove_null(2).remove_null(1).remove_null(0)
+            self._K1 = K.remove_null(3).remove_null(
+                2).remove_null(1).remove_null(0)
             self._F._null = [3, 2, 1, 0]
             self._F._array[-1] = -1 * effort
         self._U = DynamicArray(nl.solve(self._K1, self._F.array()).tolist())
         self._U.arrayFromNull(self._F._null)
+        self._FR = np.asarray(np.dot(K, self._U._array))[0]
 
     def nodesCoordinates(self):
         """Return coordinates of the nodes."""

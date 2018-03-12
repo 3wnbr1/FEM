@@ -54,7 +54,8 @@ class App(QMainWindow, Ui_MainWindow):
         self.comboBoxMaterials.currentTextChanged.connect(self.materialChanged)
         self.comboBoxSections.currentTextChanged.connect(self.sectionChanged)
         self.comboBoxResults.currentTextChanged.connect(self.updateGraph)
-        self.horizontalSliderElements.valueChanged.connect(self.elementsNumberChanged)
+        self.horizontalSliderElements.valueChanged.connect(
+            self.elementsNumberChanged)
         self.pushButtonStartComputation.clicked.connect(self.compute)
         self.pushButtonSave.clicked.connect(self.saveFigure)
         self.pushButtonExcel.clicked.connect(self.saveExcel)
@@ -75,7 +76,8 @@ class App(QMainWindow, Ui_MainWindow):
         self.groupBoxElements.setEnabled(True)
         self.groupBoxComputation.setEnabled(True)
         self.labelStatus1.setText("✅")
-        self.model = eval("models." + self.listWidget.currentItem().text() + '()')
+        self.model = eval(
+            "models." + self.listWidget.currentItem().text() + '()')
         self.loadConditions()
 
     def materialChanged(self):
@@ -147,10 +149,15 @@ class App(QMainWindow, Ui_MainWindow):
                 if '.xlsx' not in name:
                     name += '.xlsx'
                 wk = xlsxwriter.Workbook(name)
-                ws = wk.add_worksheet()
-                ws.write(0, 0, "Noeuds")
-                for line in range(1, self.model._nodes+1):
+                ws = wk.add_worksheet("Déplacements")
+                bold = wk.add_format({'bold': True})
+                ws.write(0, 0, "Noeuds", bold)
+                ws.write(0, 1, "Efforts nodaux", bold)
+                ws.write(0, 2, "Deplacement", bold)
+                for line in range(1, self.model._nodes + 1):
                     ws.write(line, 0, line)
+                    ws.write(line, 1, self.model._FR[line - 1])
+                    ws.write(line, 2, self.model._U._array[line - 1])
                 wk.close()
         except BaseException:
             QMessageBox.warning(self, 'Avertissement',
@@ -171,10 +178,11 @@ class App(QMainWindow, Ui_MainWindow):
         diag.show()
         QApplication.processEvents()
         ts = perf_counter()
-        self.model.solve(self.comboBoxConditions.currentIndex(), self.doubleSpinBoxEffort.value())
+        self.model.solve(self.comboBoxConditions.currentIndex(),
+                         self.doubleSpinBoxEffort.value())
         at = perf_counter()
         diag.reset()
-        self.labelComputationInfo.setText("Temps de calcul %f s" % (at-tm))
+        self.labelComputationInfo.setText("Temps de calcul %f s" % (at - tm))
         self.updateGraph()
 
     def updateGraph(self):
