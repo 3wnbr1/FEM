@@ -173,6 +173,7 @@ class App(QMainWindow, Ui_MainWindow):
         diag.setLabelText("Resolution en cours...")
         diag.show()
         tm = perf_counter()
+        self.model._lenght = self.doubleSpinBoxLenght.value()
         self.updateSection()
         self.model.elems(int(self.lineEditElements.text()))
         diag.show()

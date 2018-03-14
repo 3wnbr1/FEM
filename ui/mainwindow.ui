@@ -88,8 +88,6 @@ p, li { white-space: pre-wrap; }
       <number>0</number>
      </property>
     </widget>
-    <zorder>labelSelectModel</zorder>
-    <zorder>labelComputationInfo</zorder>
    </widget>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -404,7 +402,7 @@ p, li { white-space: pre-wrap; }
        <x>0</x>
        <y>300</y>
        <width>251</width>
-       <height>101</height>
+       <height>136</height>
       </rect>
      </property>
      <property name="title">
@@ -427,7 +425,7 @@ p, li { white-space: pre-wrap; }
       <property name="geometry">
        <rect>
         <x>15</x>
-        <y>70</y>
+        <y>110</y>
         <width>71</width>
         <height>20</height>
        </rect>
@@ -440,7 +438,7 @@ p, li { white-space: pre-wrap; }
       <property name="geometry">
        <rect>
         <x>15</x>
-        <y>50</y>
+        <y>85</y>
         <width>111</width>
         <height>16</height>
        </rect>
@@ -453,7 +451,7 @@ p, li { white-space: pre-wrap; }
       <property name="geometry">
        <rect>
         <x>140</x>
-        <y>45</y>
+        <y>80</y>
         <width>81</width>
         <height>24</height>
        </rect>
@@ -465,12 +463,47 @@ p, li { white-space: pre-wrap; }
        <double>10.000000000000000</double>
       </property>
      </widget>
+     <widget class="QDoubleSpinBox" name="doubleSpinBoxLenght">
+      <property name="geometry">
+       <rect>
+        <x>140</x>
+        <y>50</y>
+        <width>81</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="decimals">
+       <number>0</number>
+      </property>
+      <property name="minimum">
+       <double>1.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>10000.000000000000000</double>
+      </property>
+      <property name="value">
+       <double>1000.000000000000000</double>
+      </property>
+     </widget>
+     <widget class="QLabel" name="labelLenght">
+      <property name="geometry">
+       <rect>
+        <x>15</x>
+        <y>55</y>
+        <width>116</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Longeur en mm</string>
+      </property>
+     </widget>
     </widget>
     <widget class="Line" name="line_4">
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>400</y>
+       <y>435</y>
        <width>251</width>
        <height>20</height>
       </rect>
@@ -486,7 +519,7 @@ p, li { white-space: pre-wrap; }
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>410</y>
+       <y>445</y>
        <width>251</width>
        <height>91</height>
       </rect>
@@ -572,9 +605,9 @@ p, li { white-space: pre-wrap; }
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>600</y>
+       <y>620</y>
        <width>251</width>
-       <height>111</height>
+       <height>91</height>
       </rect>
      </property>
      <property name="title">
@@ -583,8 +616,8 @@ p, li { white-space: pre-wrap; }
      <widget class="QComboBox" name="comboBoxResults">
       <property name="geometry">
        <rect>
-        <x>10</x>
-        <y>30</y>
+        <x>5</x>
+        <y>25</y>
         <width>131</width>
         <height>26</height>
        </rect>
@@ -620,7 +653,7 @@ p, li { white-space: pre-wrap; }
       <property name="geometry">
        <rect>
         <x>130</x>
-        <y>70</y>
+        <y>55</y>
         <width>113</width>
         <height>32</height>
        </rect>
@@ -633,7 +666,7 @@ p, li { white-space: pre-wrap; }
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>70</y>
+        <y>55</y>
         <width>113</width>
         <height>32</height>
        </rect>
@@ -647,7 +680,7 @@ p, li { white-space: pre-wrap; }
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>580</y>
+       <y>610</y>
        <width>251</width>
        <height>20</height>
       </rect>
@@ -663,7 +696,7 @@ p, li { white-space: pre-wrap; }
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>510</y>
+       <y>540</y>
        <width>251</width>
        <height>71</height>
       </rect>
@@ -702,7 +735,7 @@ p, li { white-space: pre-wrap; }
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>500</y>
+       <y>530</y>
        <width>251</width>
        <height>20</height>
       </rect>
