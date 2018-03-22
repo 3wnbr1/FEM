@@ -629,6 +629,11 @@ p, li { white-space: pre-wrap; }
       </item>
       <item>
        <property name="text">
+        <string>Déplacements</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
         <string>Contraintes</string>
        </property>
       </item>
