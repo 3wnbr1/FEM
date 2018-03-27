@@ -14,7 +14,7 @@ The purpose of this code is first academic. It's to explain simply how industria
 
 Your computer must have more than 2GB of RAM and verify one of the specifications bellow.
 
-- Anaconda Python3.6
+- Anaconda Python3.5 or higher
 
 
 ### Installation

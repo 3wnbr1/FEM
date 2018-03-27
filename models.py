@@ -88,14 +88,10 @@ class Model:
 class PoutreEnTraction(Model):
     """Model PoutreEnTraction from baseclass Model."""
 
-    def __new__(self):
+    def __init__(self):
         """Init super and current class."""
-        self.__init_subclass__()
-        return super(Model, self).__new__(self)
-
-    def __init_subclass__(self):
-        """Init subclass from Model."""
         self._D = 1
+        super().__init__()
 
     @jit
     def mesh(self):
@@ -135,7 +131,7 @@ class PoutreEnTraction(Model):
     @property
     def types(self):
         """Return conditions aux limites."""
-        return ["Traction", "Traction + Poid", "Compression", "Compression + Poid"]
+        return ["Traction", "Traction + Poids", "Compression", "Compression + Poids"]
 
     @property
     def legend(self):
@@ -150,14 +146,10 @@ class PoutreEnTraction(Model):
 class PoutreEnFlexion(Model):
     """Model PoutreEnFlexion from baseclass Model."""
 
-    def __new__(self):
-        """New."""
-        self.__init_subclass__()
-        return super(Model, self).__new__(self)
-
-    def __init_subclass__(self):
-        """Init subclass."""
+    def __init__(self):
+        """Init super and current class."""
         self._D = 1
+        super().__init__()
 
     def mesh(self):
         """Mesh."""
@@ -209,14 +201,10 @@ class PoutreEnFlexion(Model):
 class TreilliSimple(Model):
     """Model TreilliSimple from baseclass Model."""
 
-    def __new__(self):
-        """New."""
-        self.__init_subclass__()
-        return super(Model, self).__new__(self)
-
-    def __init_subclass__(self):
-        """Init subclass."""
+    def __init__(self):
+        """Init super and current class."""
         self._D = 2
+        super().__init__()
 
     @jit
     def mesh(self, index=0):

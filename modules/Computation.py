@@ -64,9 +64,3 @@ class DynamicArray:
             else:
                 self._array.insert(e, 0)
         return self._array
-
-
-if __name__ == '__main__':
-    a = DynamicArray([1, 2, 3, 4, 5, 6, 7, 8, 9], [1, -1])
-    b = DynamicArray(a.array())
-    b.arrayFromNull(a._null)
