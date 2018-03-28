@@ -14,7 +14,7 @@ import numpy.linalg as nl
 from numba import jit
 from math import sqrt
 from db import fem
-from modules.Computation import Matrix, DynamicArray, nodesCombination
+from modules.Computation import Matrix, DynamicArray, nodesCombination, ConstraintTensor, DeformationTensor
 from modules import Elements
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -120,13 +120,18 @@ class PoutreEnTraction(Model):
         y = np.array(self._U._array)
         return [x, y]
 
+    def deformations(self):
+        """Deformations."""
+        pass
+
     @property
     def contraintes(self):
         """Contraintes."""
-        F = [2*abs(self._FR[0])]
-        for i in range(len(self._FR)):
-            F.append(abs(F[i - 1]))
-        return np.array(F)/self.section.S
+        vonMises = []
+        for e, i in zip(self.elements, range(len(self.elements))):
+            vonMises.append(e.deformationsTensor(self._U._array[i+1]-self._U._array[i]).generalizedHooke().vonMises())
+        vonMises.pop(-1)
+        return vonMises
 
     @property
     def types(self):

@@ -19,6 +19,7 @@ class Materials(Base):
     Description = Column(String(250))
     E = Column(Integer)
     rho = Column(Integer)
+    nu = Column(Integer)
 
     def __repr__(self):
         """repr."""

@@ -10,7 +10,7 @@ __email__ = "ewen.brun@ecam.fr"
 
 
 import numpy as np
-from modules.Computation import Matrix
+from modules.Computation import Matrix, DeformationTensor
 
 
 class Bar:
@@ -19,8 +19,16 @@ class Bar:
     def __init__(self, model, index):
         """Init."""
         self.index = index
+        self.material = model.material
+        self.lenght = model._lenght / model._nodes
         self.k = np.matrix([[1, -1], [-1, 1]])
-        self.k *= model.material.E * model.section.S * model._nodes / model._lenght
+        self.k *= model.material.E * model.section.S * self.lenght
+
+    def deformationsTensor(self, u):
+        """Return -> DeformationTensor."""
+        d = DeformationTensor(self)
+        d.vector[0] = u / self.lenght
+        return d
 
 
 class Poutre:
@@ -28,11 +36,13 @@ class Poutre:
 
     def __init__(self, model, index):
         """Init."""
+        self.material = model.material
         self.lenght = model._lenght / model._nodes
         self.index = index
         self.k = np.matrix([[12, 6 * self.lenght, -12, 6 * self.lenght], [6 * self.lenght, 4 * self.lenght**2, -6 * self.lenght, 2 * self.lenght**2],
                             [-12, -6 * self.lenght, 12, -6 * self.lenght], [6 * self.lenght, 2 * self.lenght**2, -6 * self.lenght, 4 * self.lenght**2]])
-        self.k = model.section.IG * model.material.E / (self.lenght**3) * self.k
+        self.k = model.section.IG * \
+            model.material.E / (self.lenght**3) * self.k
 
 
 class TreillisBar:
@@ -40,6 +50,7 @@ class TreillisBar:
 
     def __init__(self, model, nodes, lenght, alpha=0):
         """Init."""
+        self.material = model.material
         self.lenght = lenght
         self.nodes = nodes
         self.alpha = alpha
@@ -48,6 +59,6 @@ class TreillisBar:
         self.k = Matrix(4, 4)
         self.k.compose(self.A, 0, 0)
         self.k.compose(self.A, 2, 2)
-        self.k.compose(-1*self.A, 2, 0)
-        self.k.compose(-1*self.A, 0, 2)
+        self.k.compose(-1 * self.A, 2, 0)
+        self.k.compose(-1 * self.A, 0, 2)
         self.k *= model.material.E * model.section.S / self.lenght
