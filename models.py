@@ -35,12 +35,7 @@ class Model:
         self.session = DBSession()
         self.material = self.session.query(fem.Materials).first()
         self.section = self.session.query(fem.Sections).first()
-
         self._lenght = 1000  # default size is 1 meter
-        self._I = (10 * 10**3) / 12  # h * b**3 / 12
-        self._D = 1
-        self.elems(1)
-        self.poutres = [[0, self._lenght], [0, 0]]
 
     def elems(self, n):
         """Set elements number and mesh."""
@@ -130,7 +125,6 @@ class PoutreEnTraction(Model):
         vonMises = []
         for e, i in zip(self.elements, range(len(self.elements))):
             vonMises.append(e.deformationsTensor(self._U._array[i+1]-self._U._array[i]).generalizedHooke().vonMises())
-        vonMises.pop(-1)
         return vonMises
 
     @property
@@ -187,6 +181,14 @@ class PoutreEnFlexion(Model):
     def deformee(self):
         """Deformée of model."""
         return np.cumsum(self._lenght / self._nodes * np.cos(self._U._array[1::2])), self._U._array[::2]
+
+    @property
+    def contraintes(self):
+        """Contraintes."""
+        vonMises = []
+        for e, i in zip(self.elements, range(len(self.elements))):
+            vonMises.append(e.deformationsTensor(self._U._array[i+1]-self._U._array[i]).generalizedHooke().vonMises())
+        return vonMises
 
     @property
     def types(self):

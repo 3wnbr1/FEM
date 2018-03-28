@@ -41,7 +41,9 @@ class MplCanvas(FigureCanvasQTAgg):
             cbar = self.fig.colorbar(lc)
             cbar.ax.set_title(r"Déformation en $mm$")
         elif t == 1:
-            lc = self.colorline(model.deformee[0], model.deformee[1], np.absolute(model.contraintes))
+            pass
+        elif t == 2:
+            lc = self.colorline(model.deformee[0], model.deformee[1], np.round(np.absolute(model.contraintes), 12))
             cbar = self.fig.colorbar(lc)
             cbar.ax.set_title(r"Contraintes en $MPa$")
         if len(model.initial) == 2:

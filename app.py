@@ -48,6 +48,7 @@ class App(QMainWindow, Ui_MainWindow):
         self.loadMaterials()
         self.loadSections()
         self.loadSectionImage()
+        self.isUp2date = True
 
         self.dockWidget.topLevelChanged.connect(self.updateWindowSize)
         self.listWidget.currentTextChanged.connect(self.modelChanged)
@@ -60,6 +61,20 @@ class App(QMainWindow, Ui_MainWindow):
         self.pushButtonSave.clicked.connect(self.saveFigure)
         self.pushButtonExcel.clicked.connect(self.saveExcel)
         self.pushButtonPlotMatrix.clicked.connect(self.plotMatrix)
+        self.initWatchDog()
+
+    def initWatchDog(self):
+        """Init watchdog to detect when parameter do change."""
+        self.comboBoxMaterials.activated.connect(self.showRunAgain)
+        self.comboBoxSections.activated.connect(self.showRunAgain)
+        self.comboBoxConditions.activated.connect(self.showRunAgain)  # WARNING
+        self.doubleSpinBoxTall.valueChanged.connect(self.showRunAgain)
+        self.doubleSpinBoxWide.valueChanged.connect(self.showRunAgain)
+        self.doubleSpinBoxThick.valueChanged.connect(self.showRunAgain)
+        self.doubleSpinBoxEffort.valueChanged.connect(self.showRunAgain)
+        self.doubleSpinBoxLenght.valueChanged.connect(self.showRunAgain)
+        self.checkBoxReparti.stateChanged.connect(self.showRunAgain)
+        self.horizontalSliderElements.sliderReleased.connect(self.showRunAgain)
 
     def updateWindowSize(self, onTop):
         """Update window size if dockWidget is on Top."""
@@ -131,6 +146,13 @@ class App(QMainWindow, Ui_MainWindow):
         plt.matshow(self.model.K())
         plt.show()
 
+    def showRunAgain(self):
+        """Show a message indicating to start again computation."""
+        if self.isUp2date is True:
+            QMessageBox.warning(
+                self, "Attention", "Attention\nLes parametres on changés, il faut relancer les calculs")
+        self.isUp2date = False
+
     def saveFigure(self):
         """Save figure."""
         try:
@@ -189,6 +211,7 @@ class App(QMainWindow, Ui_MainWindow):
     def updateGraph(self):
         """Update graphs."""
         self.mpl.canvas.graph(self.model, self.comboBoxResults.currentIndex())
+        self.isUp2date = True
 
     def updateSection(self):
         """Update section dimensions."""
