@@ -33,24 +33,31 @@ class MplCanvas(FigureCanvasQTAgg):
 
     def graph(self, model, t=0):
         """Plot deformée."""
+        # Initialise l'espace du graphique
         self.fig.clf()
         self.ax = self.fig.add_subplot(111)
         self.ax.set_title(model.legend['title'])
+
+        # Afiche la courbe de deformee coloree en fonction du resulat selectionné
         if t == 0:
-            lc = self.colorline(model.deformee[0], model.deformee[1], np.absolute(model.deformee[1]))
+            lc = self.colorline(model.deformee[0], model.deformee[1], np.round(np.absolute(model.deplacements[:-1:]), 12))
             cbar = self.fig.colorbar(lc)
-            cbar.ax.set_title(r"Déformation en $mm$")
+            cbar.ax.set_title(r"Déplacement en $mm$")
         elif t == 1:
-            pass
+            lc = self.colorline(model.deformee[0], model.deformee[1], np.absolute(model.deformations))
+            cbar = self.fig.colorbar(lc)
+            cbar.ax.set_title(r"Déformation en %")
         elif t == 2:
             lc = self.colorline(model.deformee[0], model.deformee[1], np.round(np.absolute(model.contraintes), 12))
             cbar = self.fig.colorbar(lc)
             cbar.ax.set_title(r"Contraintes en $MPa$")
+
+        # Affiche la poutre initiale
         if len(model.initial) == 2:
-            self.ax.plot(model.initial[0], model.initial[1], linewidth=3, color='k')
+            self.ax.plot(model.initial[0], model.initial[1], linewidth=2, color='k', linestyle="-.")
         else:
             for line in model.initial:
-                self.ax.plot(line[0], line[1], linewidth=3, color='k')
+                self.ax.plot(line[0], line[1], linewidth=2, color='k', linestyle="-.")
         self.ax.set_xlabel(model.legend['xtitle'])
         self.ax.set_ylabel(model.legend['ytitle'])
         self.draw()
@@ -59,7 +66,7 @@ class MplCanvas(FigureCanvasQTAgg):
         """Plot a colored line with coordinates x and y."""
         z = np.asarray(z)
         segments = make_segments(x, y)
-        lc = LineCollection(segments, array=z, cmap='jet', linewidth=3, alpha=1)
+        lc = LineCollection(segments, array=z, cmap='jet', linewidth=6, alpha=1)
         self.ax.add_collection(lc)
         return lc
 

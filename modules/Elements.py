@@ -44,6 +44,17 @@ class Poutre:
         self.k = model.section.IG * \
             model.material.E / (self.lenght**3) * self.k
 
+    def deformationsTensor(self, v, theta):
+        """Return -> DeformationTensor."""
+        d = DeformationTensor(self)
+        d.vector[0] = (np.cos(theta)-1)
+        d.vector[3] = v / (2*self.lenght)
+
+        # d.vector[1] = v / (2*self.lenght*np.sin(theta))
+        # d.vector[3] = v / (self.lenght*np.cos(theta))
+        print(d)
+        return d
+
 
 class TreillisBar:
     """Element barre pour les treillis."""

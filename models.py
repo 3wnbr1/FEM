@@ -14,7 +14,7 @@ import numpy.linalg as nl
 from numba import jit
 from math import sqrt
 from db import fem
-from modules.Computation import Matrix, DynamicArray, nodesCombination, ConstraintTensor, DeformationTensor
+from modules.Computation import Matrix, DynamicArray, nodesCombination
 from modules import Elements
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -104,27 +104,54 @@ class PoutreEnTraction(Model):
         if selected == 0:
             self._F._array[-1] = effort
             self._F._null = [0]
+        elif selected == 1:
+            self._F._array[-1] = effort
+            for e, i in zip(self.elements, range(1, self._nodes)):
+                self._F._array[i] = - 9.81*e.lenght*self.material.rho*self.section.S/10e9
+            self._F._null = [0]
+        elif selected == 2:
+            self._F._array[-1] = -1*effort
+            self._F._null = [0]
+        elif selected == 3:
+            self._F._array[-1] = -1*effort
+            for e, i in zip(self.elements, range(1, self._nodes)):
+                self._F._array[i] = - 9.81*e.lenght*self.material.rho*self.section.S/10e9
+            self._F._null = [0]
         self._U = DynamicArray(nl.solve(self._K1, self._F.array()).tolist())
         self._U.arrayFromNull(self._F._null)
         self._FR = np.asarray(np.dot(K, self._U._array))[0]
 
     @property
+    def initial(self):
+        """Return the initial poutre."""
+        return [0, 0], [0, self._lenght]
+
+    @property
     def deformee(self):
         """Return deformée."""
-        x = np.linspace(0, self._lenght, self._nodes + 1)
-        y = np.array(self._U._array)
+        u = np.cumsum(np.array(self._U._array))
+        d = np.linspace(0, self._lenght, self._nodes + 1)
+        y = [uu + dd for uu, dd in zip(u, d)]
+        x = [0] * (self._nodes + 1)
         return [x, y]
 
+    @property
+    def deplacements(self):
+        """Deformations."""
+        return np.array(self._U._array)
+
+    @property
     def deformations(self):
         """Deformations."""
-        pass
+        return [0, 1]
 
     @property
     def contraintes(self):
         """Contraintes."""
         vonMises = []
         for e, i in zip(self.elements, range(len(self.elements))):
-            vonMises.append(e.deformationsTensor(self._U._array[i+1]-self._U._array[i]).generalizedHooke().vonMises())
+            vonMises.append(e.deformationsTensor(
+                self._U._array[i + 1] - self._U._array[i]).generalizedHooke().vonMises())
         return vonMises
 
     @property
@@ -183,11 +210,22 @@ class PoutreEnFlexion(Model):
         return np.cumsum(self._lenght / self._nodes * np.cos(self._U._array[1::2])), self._U._array[::2]
 
     @property
+    def deplacements(self):
+        """Deformations."""
+        return self._U._array[::2]
+
+    @property
+    def deformations(self):
+        """Deformations."""
+        return [0, 1]
+
+    @property
     def contraintes(self):
         """Contraintes."""
         vonMises = []
-        for e, i in zip(self.elements, range(len(self.elements))):
-            vonMises.append(e.deformationsTensor(self._U._array[i+1]-self._U._array[i]).generalizedHooke().vonMises())
+        for e, i in zip(self.elements, range(len(self.elements) // 2)):
+            vonMises.append(e.deformationsTensor(self._U._array[2 * i + 2] - self._U._array[2 * i],
+                                                 self._U._array[2 * i + 3] - self._U._array[2 * i + 1]).generalizedHooke().vonMises())
         return vonMises
 
     @property
@@ -312,6 +350,21 @@ class TreilliSimple(Model):
     def deformee(self):
         """Return Deformée."""
         return [0, 1]
+
+    @property
+    def deplacements(self):
+        """Deformations."""
+        return self._U._array[::2]
+
+    @property
+    def deformations(self):
+        """Deformations."""
+        return [0, 1]
+
+    @property
+    def contraintes(self):
+        """Contraintes."""
+        pass
 
     @property
     def types(self):

@@ -131,4 +131,9 @@ class ConstraintTensor(Tensor):
 
     def vonMises(self):
         """Von Mises Constraints."""
-        return 1 / sqrt(2) * sqrt((self.vector[0] - self.vector[1])**2 + (self.vector[1] - self.vector[2])**2 + (self.vector[2] - self.vector[0])**2 + 6 * sum(self.vector[3:6:]))
+        diag = (self.vector[0] - self.vector[1])**2 + (self.vector[1] - self.vector[2])**2 + (self.vector[2] - self.vector[0])**2
+        return 1 / sqrt(2) * sqrt(diag + 6 * sum([v**2 for v in self.vector[3:6:]]))
+
+
+d = DeformationTensor(1)
+d.vector = [1, 2, 3, 4, 5, 6]
