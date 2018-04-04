@@ -138,7 +138,7 @@ class PoutreEnTraction(Model):
     @property
     def deplacements(self):
         """Deformations."""
-        return np.array(self._U._array)
+        return np.cumsum(np.array(self._U._array))
 
     @property
     def deformations(self):
