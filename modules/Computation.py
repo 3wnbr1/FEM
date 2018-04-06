@@ -35,29 +35,31 @@ class Matrix(np.matrix):
         for n in range(m):
             self[y + n, x:x + m] += matrix[n]
 
-    def remove_null(self, n):
+    def removeNull(self, lst):
         """Remove n-th row and column of the Matrix."""
-        return np.delete(np.delete(self, [n], axis=1), [n], axis=0)
+        for i in range(len(lst)):
+            if lst[i] < 0:
+                lst[i] += self.shape[0]
+        keepList = [i for i in range(self.shape[0]) if i not in lst]
+        return self[np.ix_(keepList, keepList)]
 
 
 class DynamicArray:
     """Dynamic array class for computation purposes."""
 
-    def __init__(self, array, null=[]):
+    def __init__(self, array, unk=[]):
         """Init."""
         self._array = array
-        self._null = null
+        self._unk = unk
 
     def array(self):
         """Return array."""
         array = list(self._array)
-        for e in self._null:
-            array.pop(e)
-        return array
+        return [array[i] for i in range(len(array)) if i not in self._unk]
 
     def arrayFromNull(self, null):
         """Array for results."""
-        self._null, n = null, 0
+        self._unk, n = null, 0
         for e in null:
             if e >= 0:
                 self._array.insert(e + n, 0)
@@ -131,9 +133,11 @@ class ConstraintTensor(Tensor):
 
     def vonMises(self):
         """Von Mises Constraints."""
-        diag = (self.vector[0] - self.vector[1])**2 + (self.vector[1] - self.vector[2])**2 + (self.vector[2] - self.vector[0])**2
+        diag = (self.vector[0] - self.vector[1])**2 + (self.vector[1] -
+                                                       self.vector[2])**2 + (self.vector[2] - self.vector[0])**2
         return 1 / sqrt(2) * sqrt(diag + 6 * sum([v**2 for v in self.vector[3:6:]]))
 
 
-d = DeformationTensor(1)
-d.vector = [1, 2, 3, 4, 5, 6]
+mat = Matrix(4, 4, 0)
+mat.compose(np.matrix([[1, 2, 3, 4], [5, 6, 7, 8],
+                       [9, 10, 11, 12], [13, 14, 15, 16]]), 0, 0)

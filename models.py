@@ -36,6 +36,7 @@ class Model:
         self.material = self.session.query(fem.Materials).first()
         self.section = self.session.query(fem.Sections).first()
         self._lenght = 1000  # default size is 1 meter
+        self._effortsRepartis = False
 
     def elems(self, n):
         """Set elements number and mesh."""
@@ -85,8 +86,8 @@ class PoutreEnTraction(Model):
 
     def __init__(self):
         """Init super and current class."""
-        self._D = 1
         super().__init__()
+        self._D = 1
 
     @jit
     def mesh(self):
@@ -99,26 +100,25 @@ class PoutreEnTraction(Model):
     def solve(self, selected=0, effort=10):
         """Solve model."""
         K = self.K()
-        self._K1 = K.remove_null(0)
         self._F = DynamicArray([0] * K.shape[0])
+        self._F._unk = [0]
+        self._K1 = K.removeNull([0])
         if selected == 0:
             self._F._array[-1] = effort
-            self._F._null = [0]
         elif selected == 1:
             self._F._array[-1] = effort
             for e, i in zip(self.elements, range(1, self._nodes)):
-                self._F._array[i] = - 9.81*e.lenght*self.material.rho*self.section.S/10e9
-            self._F._null = [0]
+                self._F._array[i] = - 9.81 * e.lenght * \
+                    self.material.rho * self.section.S / 10e9
         elif selected == 2:
-            self._F._array[-1] = -1*effort
-            self._F._null = [0]
+            self._F._array[-1] = -1 * effort
         elif selected == 3:
-            self._F._array[-1] = -1*effort
+            self._F._array[-1] = -1 * effort
             for e, i in zip(self.elements, range(1, self._nodes)):
-                self._F._array[i] = - 9.81*e.lenght*self.material.rho*self.section.S/10e9
-            self._F._null = [0]
+                self._F._array[i] = - 9.81 * e.lenght * \
+                    self.material.rho * self.section.S / 10e9
         self._U = DynamicArray(nl.solve(self._K1, self._F.array()).tolist())
-        self._U.arrayFromNull(self._F._null)
+        self._U.arrayFromNull(self._F._unk)
         self._FR = np.asarray(np.dot(K, self._U._array))[0]
 
     @property
@@ -174,8 +174,9 @@ class PoutreEnFlexion(Model):
 
     def __init__(self):
         """Init super and current class."""
-        self._D = 1
         super().__init__()
+        self._D = 1
+        self._effortsRepartis = True
 
     def mesh(self):
         """Mesh."""
@@ -188,20 +189,26 @@ class PoutreEnFlexion(Model):
         K = self.K()
         self._F = DynamicArray([0] * K.shape[0])
         if selected == 0:
-            self._K1 = K.remove_null(1).remove_null(0)
-            self._F._null = [0, 1]
-            self._F._array[-2] = -1 * effort
+            self._F._unk = [0, 1]
+            if reparti is False:
+                self._F._array[-2] = -1 * effort
+            else:
+                self._F._array[2::2] = [-1 * effort / self._nodes] * len(self._F._array[2::2])
         elif selected == 1:
-            self._K1 = K.remove_null(self._nodes * 2 - 1).remove_null(
-                self._nodes * 2 - 1).remove_null(1).remove_null(0)
-            self._F._null = [-1, -1, 1, 0]
-            self._F._array[self._nodes] = -1 * effort
+            self._F._unk = [0, 1, -2, -1]
+            if reparti is False:
+                self._F._array[self._nodes] = -1 * effort
+            else:
+                self._F._array[2:-1:2] = [-1 * effort / self._nodes] * len(self._F._array[2:-1:2])
         elif selected == 2:
-            self._K1 = K.remove_null(K.shape[0] - 2).remove_null(0)
-            self._F._null = [0, -2]
-            self._F._array[len(self._F._array) // 2 + 1] = -1 * effort
+            self._F._unk = [0, -2]
+            if reparti is False:
+                self._F._array[len(self._F._array) // 2 + 1] = -1 * effort
+            else:
+                self._F._array[2:-1:2] = [-1 * effort / self._nodes] * len(self._F._array[2:-1:2])
+        self._K1 = K.removeNull(self._F._unk)
         self._U = DynamicArray(nl.solve(self._K1, self._F.array()).tolist())
-        self._U.arrayFromNull(self._F._null)
+        self._U.arrayFromNull(self._F._unk)
         self._FR = np.asarray(np.dot(K, self._U._array))[0]
 
     @property
@@ -248,8 +255,8 @@ class TreilliSimple(Model):
 
     def __init__(self):
         """Init super and current class."""
-        self._D = 2
         super().__init__()
+        self._D = 2
 
     @jit
     def mesh(self, index=0):
@@ -312,17 +319,15 @@ class TreilliSimple(Model):
         K = self.K()
         self._F = DynamicArray([0] * K.shape[0])
         if selected == 0:
-            self._K1 = K.remove_null(4).remove_null(1).remove_null(0)
-            self._F._null = [4, 1, 0]
+            self._F._unk = [4, 1, 0]
             self._F._array[-1] = -1 * effort
-            print(nl.solve(self._K1, self._F.array()))
         else:
-            self._K1 = K.remove_null(3).remove_null(
-                2).remove_null(1).remove_null(0)
-            self._F._null = [3, 2, 1, 0]
+            self._F._unk = [3, 2, 1, 0]
             self._F._array[-1] = -1 * effort
+        self.K1 = K.removeNull(self._F._unk)
+        # print(nl.solve(self._K1, self._F.array()))
         self._U = DynamicArray(nl.solve(self._K1, self._F.array()).tolist())
-        self._U.arrayFromNull(self._F._null)
+        self._U.arrayFromNull(self._F._unk)
         self._FR = np.asarray(np.dot(K, self._U._array))[0]
 
     def nodesCoordinates(self):

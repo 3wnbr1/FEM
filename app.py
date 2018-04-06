@@ -94,6 +94,11 @@ class App(QMainWindow, Ui_MainWindow):
         self.model = eval(
             "models." + self.listWidget.currentItem().text() + '()')
         self.loadConditions()
+        if self.model._effortsRepartis:
+            self.checkBoxReparti.setEnabled(True)
+        else:
+            self.checkBoxReparti.setChecked(False)
+            self.checkBoxReparti.setEnabled(False)
 
     def materialChanged(self):
         """Change material on selection."""
@@ -201,8 +206,12 @@ class App(QMainWindow, Ui_MainWindow):
         diag.show()
         QApplication.processEvents()
         ts = perf_counter()
-        self.model.solve(self.comboBoxConditions.currentIndex(),
-                         self.doubleSpinBoxEffort.value())
+        if self.model._effortsRepartis:
+            self.model.solve(self.comboBoxConditions.currentIndex(),
+                             self.doubleSpinBoxEffort.value(), self.checkBoxReparti.isChecked())
+        else:
+            self.model.solve(self.comboBoxConditions.currentIndex(),
+                             self.doubleSpinBoxEffort.value())
         at = perf_counter()
         diag.reset()
         self.labelComputationInfo.setText("Temps de calcul %f s" % (at - tm))
