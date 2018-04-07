@@ -111,8 +111,13 @@ class PoutreEnTraction(Model):
                 self._F._array[i] = - 9.81 * e.lenght * \
                     self.material.rho * self.section.S / 10e9
         elif selected == 2:
-            self._F._array[-1] = -1 * effort
+            self._F._array[-1] = 0
+            for e, i in zip(self.elements, range(1, self._nodes)):
+                self._F._array[i] = - 9.81 * e.lenght * \
+                    self.material.rho * self.section.S / 10e9
         elif selected == 3:
+            self._F._array[-1] = -1 * effort
+        elif selected == 4:
             self._F._array[-1] = -1 * effort
             for e, i in zip(self.elements, range(1, self._nodes)):
                 self._F._array[i] = - 9.81 * e.lenght * \
@@ -157,7 +162,7 @@ class PoutreEnTraction(Model):
     @property
     def types(self):
         """Return conditions aux limites."""
-        return ["Traction", "Traction + Poids", "Compression", "Compression + Poids"]
+        return ["Traction", "Traction + Poids", "Poids Propre", "Compression", "Compression + Poids"]
 
     @property
     def legend(self):
@@ -193,19 +198,22 @@ class PoutreEnFlexion(Model):
             if reparti is False:
                 self._F._array[-2] = -1 * effort
             else:
-                self._F._array[2::2] = [-1 * effort / self._nodes] * len(self._F._array[2::2])
+                self._F._array[2::2] = [-1 * effort /
+                                        self._nodes] * len(self._F._array[2::2])
         elif selected == 1:
             self._F._unk = [0, 1, -2, -1]
             if reparti is False:
                 self._F._array[self._nodes] = -1 * effort
             else:
-                self._F._array[2:-1:2] = [-1 * effort / self._nodes] * len(self._F._array[2:-1:2])
+                self._F._array[2:-1:2] = [-1 * effort /
+                                          self._nodes] * len(self._F._array[2:-1:2])
         elif selected == 2:
             self._F._unk = [0, -2]
             if reparti is False:
                 self._F._array[len(self._F._array) // 2 + 1] = -1 * effort
             else:
-                self._F._array[2:-1:2] = [-1 * effort / self._nodes] * len(self._F._array[2:-1:2])
+                self._F._array[2:-1:2] = [-1 * effort /
+                                          self._nodes] * len(self._F._array[2:-1:2])
         self._K1 = K.removeNull(self._F._unk)
         self._U = DynamicArray(nl.solve(self._K1, self._F.array()).tolist())
         self._U.arrayFromNull(self._F._unk)
