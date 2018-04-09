@@ -10,7 +10,6 @@ __email__ = "ewen.brun@ecam.fr"
 
 
 import numpy as np
-from numba import jit
 from math import sqrt
 
 
@@ -28,7 +27,7 @@ class Matrix(np.matrix):
         """Inheritance."""
         return super(Matrix, self).__new__(self, [[value] * x] * y)
 
-    @jit
+
     def compose(self, matrix, x, y):
         """Composes matrices."""
         m = len(matrix)

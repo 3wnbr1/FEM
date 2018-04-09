@@ -1,6 +1,5 @@
-SQLAlchemy==1.1.14
-matplotlib==2.2.2
-numba==0.37.0
-XlsxWriter==1.0.2
-numpy==1.13.3
+numpy>=1.12
+SQLAlchemy>=1.1
+matplotlib>=2.0
+XlsxWriter>=1.0
 PyQt5>=5

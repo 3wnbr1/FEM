@@ -1,5 +1,6 @@
 # FEM
 
+[![Build Status](https://travis-ci.org/EwenBrun/FEM.svg?branch=master)](https://travis-ci.org/EwenBrun/FEM)
 [![Maintainability](https://api.codeclimate.com/v1/badges/79d55b3cc1649d0783ed/maintainability)](https://codeclimate.com/github/EwenBrun/FEM/maintainability)
 
 ### *Finite Elements Analysis applied to static*

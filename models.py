@@ -11,7 +11,6 @@ __email__ = "ewen.brun@ecam.fr"
 
 import numpy as np
 import numpy.linalg as nl
-from numba import jit
 from math import sqrt
 from db import fem
 from modules.Computation import Matrix, DynamicArray, nodesCombination
@@ -52,7 +51,7 @@ class Model:
         """Return degrees de liberte."""
         return self.elements[0].k.shape[0] // 2
 
-    @jit
+
     def K(self):
         """Return rigidity matrix."""
         K = Matrix((self._nodes + 1) * self.ddl,
@@ -89,14 +88,14 @@ class PoutreEnTraction(Model):
         super().__init__()
         self._D = 1
 
-    @jit
+
     def mesh(self):
         """Mesh model."""
         self.elements = []
         for i in range(0, self._nodes):
             self.elements.append(Elements.Bar(self, i))
 
-    @jit
+
     def solve(self, selected=0, effort=10):
         """Solve model."""
         K = self.K()
@@ -266,7 +265,7 @@ class TreilliSimple(Model):
         super().__init__()
         self._D = 2
 
-    @jit
+
     def mesh(self, index=0):
         r"""
         Mesh model.
@@ -297,7 +296,7 @@ class TreilliSimple(Model):
             self.elements.append(Elements.TreillisBar(
                 self, [3, 4], 100, np.pi / 4))
 
-    @jit
+
     def K(self, index=0):
         """Return rigidity matrix."""
         K = Matrix((self._nodes) * 2, (self._nodes) * 2)
