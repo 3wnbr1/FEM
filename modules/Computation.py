@@ -59,11 +59,10 @@ class DynamicArray:
 
     def arrayFromNull(self, null):
         """Array for results."""
-        self._unk, n = null, 0
-        for e in null:
+        self._unk = null
+        for e in self._unk:
             if e >= 0:
-                self._array.insert(e + n, 0)
-                n += 1
+                self._array.insert(e, 0)
             else:
                 self._array.insert(e, 0)
         return self._array
@@ -111,8 +110,8 @@ class DeformationTensor(Tensor):
         E, nu = self.element.material.E, self.element.material.nu
         mu, lbda = nu * E / ((1 + nu) * (1 - 2 * nu)), E / (2 * (1 + nu))
         mat = Matrix(6, 6, 0.0)
-        for i in range(9):
-            mat[i % 6, i % 6] = mu
+        for i in range(6):
+            mat[i] = 2*mu
         mat.compose(Matrix(3, 3, lbda), 0, 0)
         return mat
 
@@ -136,8 +135,3 @@ class ConstraintTensor(Tensor):
         diag = (self.vector[0] - self.vector[1])**2 + (self.vector[1] -
                                                        self.vector[2])**2 + (self.vector[2] - self.vector[0])**2
         return 1 / sqrt(2) * sqrt(diag + 6 * sum([v**2 for v in self.vector[3:6:]]))
-
-
-mat = Matrix(4, 4, 0)
-mat.compose(np.matrix([[1, 2, 3, 4], [5, 6, 7, 8],
-                       [9, 10, 11, 12], [13, 14, 15, 16]]), 0, 0)

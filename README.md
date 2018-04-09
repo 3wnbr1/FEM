@@ -1,4 +1,7 @@
 # FEM
+
+[![Maintainability](https://api.codeclimate.com/v1/badges/79d55b3cc1649d0783ed/maintainability)](https://codeclimate.com/github/EwenBrun/FEM/maintainability)
+
 ### *Finite Elements Analysis applied to static*
 
 ![Logo](docs/FEM.png)

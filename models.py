@@ -327,13 +327,12 @@ class TreilliSimple(Model):
         K = self.K()
         self._F = DynamicArray([0] * K.shape[0])
         if selected == 0:
-            self._F._unk = [4, 1, 0]
+            self._F._unk = [0, 1, -2]
             self._F._array[-1] = -1 * effort
         else:
-            self._F._unk = [3, 2, 1, 0]
+            self._F._unk = [0, 1, 2, 3]
             self._F._array[-1] = -1 * effort
-        self.K1 = K.removeNull(self._F._unk)
-        # print(nl.solve(self._K1, self._F.array()))
+        self._K1 = K.removeNull(self._F._unk)
         self._U = DynamicArray(nl.solve(self._K1, self._F.array()).tolist())
         self._U.arrayFromNull(self._F._unk)
         self._FR = np.asarray(np.dot(K, self._U._array))[0]
@@ -362,7 +361,7 @@ class TreilliSimple(Model):
     @property
     def deformee(self):
         """Return Deformée."""
-        return [0, 1]
+        return self.initial
 
     @property
     def deplacements(self):
