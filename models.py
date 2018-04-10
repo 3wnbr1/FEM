@@ -179,6 +179,10 @@ class PoutreEnFlexion(Model):
         self.elementsClass = Elements.Poutre
         self._effortsRepartis = True
 
+    def partEffort(self, effort, array):
+        """Part effort equally on an array."""
+        array = [effort / self._nodes] * len(array)
+
     def solve(self, selected=0, effort=10, reparti=False):
         """Solve model."""
         K = self.K()
@@ -188,22 +192,19 @@ class PoutreEnFlexion(Model):
             if reparti is False:
                 self._F._array[-2] = -1 * effort
             else:
-                self._F._array[2::2] = [-1 * effort /
-                                        self._nodes] * len(self._F._array[2::2])
+                partEffort(self._F._array[2::2])
         elif selected == 1:
             self._F._unk = [0, 1, -2, -1]
             if reparti is False:
                 self._F._array[self._nodes] = -1 * effort
             else:
-                self._F._array[2:-1:2] = [-1 * effort /
-                                          self._nodes] * len(self._F._array[2:-1:2])
+                partEffort(self._F._array[2:-1:2])
         elif selected == 2:
             self._F._unk = [0, -2]
             if reparti is False:
                 self._F._array[len(self._F._array) // 2 + 1] = -1 * effort
             else:
-                self._F._array[2:-1:2] = [-1 * effort /
-                                          self._nodes] * len(self._F._array[2:-1:2])
+                partEffort(self._F._array[2:-1:2])
         self._K1 = K.removeNull(self._F._unk)
         self._U = DynamicArray(nl.solve(self._K1, self._F.array()).tolist())
         self._U.arrayFromNull(self._F._unk)
