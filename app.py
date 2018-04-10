@@ -100,13 +100,17 @@ class App(QMainWindow, Ui_MainWindow):
             self.checkBoxReparti.setChecked(False)
             self.checkBoxReparti.setEnabled(False)
 
+    def currentObject(self, Class, name):
+        """Return currentObject from Class matching Name."""
+        return self.model.session.query(Class).filter(Class.Name == name).first()
+
     def materialChanged(self):
         """Change material on selection."""
-        self.model.material = self.model.session.query(Materials).filter(Materials.Name == self.comboBoxMaterials.currentText()).first()
+        self.model.material = self.currentObject(Material, self.comboBoxMaterials.currentText())
 
     def sectionChanged(self):
         """Change section on selection."""
-        self.model.section = self.model.session.query(Sections).filter(Sections.Name == self.comboBoxSections.currentText()).first()
+        self.model.section = self.currentObject(Section, self.comboBoxSections.currentText())
         if self.model.section.has_thickness:
             self.labelThick.setDisabled(False)
             self.doubleSpinBoxThick.setDisabled(False)
@@ -120,13 +124,17 @@ class App(QMainWindow, Ui_MainWindow):
         self.lineEditElements.setText(
             str(int(2**(self.horizontalSliderElements.value()))))
 
+    def queryAll(self, where):
+        """Query all elements names in column."""
+        return [i[0] for i in self.model.session.execute(text('select Name from %s' % where))]
+
     def loadMaterials(self):
         """Load materials from db."""
-        self.comboBoxMaterials.addItems([i[0] for i in self.model.session.execute(text('select Name from Materials'))])
+        self.comboBoxMaterials.addItems(self.queryAll("Materials"))
 
     def loadSections(self):
         """Load scetion names from db."""
-        self.comboBoxSections.addItems([i[0] for i in self.model.session.execute(text('select Name from Sections'))])
+        self.comboBoxSections.addItems(self.queryAll("Sections"))
 
     def loadConditions(self):
         """Load initial conditions."""

@@ -39,19 +39,14 @@ class Poutre:
         self.material = model.material
         self.lenght = model._lenght / model._nodes
         self.index = index
-        self.k = np.matrix([[12, 6 * self.lenght, -12, 6 * self.lenght], [6 * self.lenght, 4 * self.lenght**2, -6 * self.lenght, 2 * self.lenght**2],
-                            [-12, -6 * self.lenght, 12, -6 * self.lenght], [6 * self.lenght, 2 * self.lenght**2, -6 * self.lenght, 4 * self.lenght**2]])
-        self.k = model.section.IG * \
-            model.material.E / (self.lenght**3) * self.k
+        a, b, c , d = 12, 6*self.lenght, 4*self.lenght**2, 2*self.lenght**2
+        self.k = np.matrix([[a, b, -1*a, b],[b,c,-1*b, d],[-1*a, -1*b, a, -1*b],[b, d, -1*b, c]])
+        self.k = model.section.IG * model.material.E / (self.lenght**3) * self.k
 
     def deformationsTensor(self, v, theta):
         """Return -> DeformationTensor."""
         d = DeformationTensor(self)
-        # d.vector[0] = (np.cos(theta)-1)
         d.vector[3] = v / (2*self.lenght)
-
-        # d.vector[1] = v / (2*self.lenght*np.sin(theta))
-        # d.vector[3] = v / (self.lenght*np.cos(theta))
         return d
 
 
