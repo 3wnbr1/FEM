@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/EwenBrun/FEM.svg?branch=master)](https://travis-ci.org/EwenBrun/FEM)
 [![Maintainability](https://api.codeclimate.com/v1/badges/79d55b3cc1649d0783ed/maintainability)](https://codeclimate.com/github/EwenBrun/FEM/maintainability)
+[![codecov](https://codecov.io/gh/EwenBrun/FEM/branch/master/graph/badge.svg)](https://codecov.io/gh/EwenBrun/FEM)
 
 ### *Finite Elements Analysis applied to static*
 

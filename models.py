@@ -355,7 +355,7 @@ class TreilliSimple(Model):
     @property
     def contraintes(self):
         """Contraintes."""
-        pass
+        return [0, 1]
 
     @property
     def types(self):

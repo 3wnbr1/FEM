@@ -106,11 +106,11 @@ class App(QMainWindow, Ui_MainWindow):
 
     def materialChanged(self):
         """Change material on selection."""
-        self.model.material = self.currentObject(Material, self.comboBoxMaterials.currentText())
+        self.model.material = self.currentObject(Materials, self.comboBoxMaterials.currentText())
 
     def sectionChanged(self):
         """Change section on selection."""
-        self.model.section = self.currentObject(Section, self.comboBoxSections.currentText())
+        self.model.section = self.currentObject(Sections, self.comboBoxSections.currentText())
         if self.model.section.has_thickness:
             self.labelThick.setDisabled(False)
             self.doubleSpinBoxThick.setDisabled(False)
