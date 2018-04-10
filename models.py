@@ -31,6 +31,7 @@ class Model:
     def __init__(self):
         """Init base class."""
         self.elements = []
+        self.elementsClass = None
         self.session = DBSession()
         self.material = self.session.query(fem.Materials).first()
         self.section = self.session.query(fem.Sections).first()
@@ -43,8 +44,10 @@ class Model:
         self.mesh()
 
     def mesh(self):
-        """Mesh method for referencing."""
-        pass
+        """Mesh."""
+        self.elements = []
+        for i in range(0, self._nodes):
+            self.elements.append(self.elementsClass(self, i))
 
     @property
     def ddl(self):
@@ -87,14 +90,13 @@ class PoutreEnTraction(Model):
         """Init super and current class."""
         super().__init__()
         self._D = 1
+        self.elementsClass = Elements.Bar
 
-
-    def mesh(self):
-        """Mesh model."""
-        self.elements = []
-        for i in range(0, self._nodes):
-            self.elements.append(Elements.Bar(self, i))
-
+    def applyWeight(self):
+        """Apply weight to each node."""
+        for e, i in zip(self.elements, range(1, self._nodes)):
+            self._F._array[i] = - 9.81 * e.lenght * \
+                self.material.rho * self.section.S / 10e9
 
     def solve(self, selected=0, effort=10):
         """Solve model."""
@@ -106,21 +108,15 @@ class PoutreEnTraction(Model):
             self._F._array[-1] = effort
         elif selected == 1:
             self._F._array[-1] = effort
-            for e, i in zip(self.elements, range(1, self._nodes)):
-                self._F._array[i] = - 9.81 * e.lenght * \
-                    self.material.rho * self.section.S / 10e9
+            self.applyWeight()
         elif selected == 2:
             self._F._array[-1] = 0
-            for e, i in zip(self.elements, range(1, self._nodes)):
-                self._F._array[i] = - 9.81 * e.lenght * \
-                    self.material.rho * self.section.S / 10e9
+            self.applyWeight()
         elif selected == 3:
             self._F._array[-1] = -1 * effort
         elif selected == 4:
             self._F._array[-1] = -1 * effort
-            for e, i in zip(self.elements, range(1, self._nodes)):
-                self._F._array[i] = - 9.81 * e.lenght * \
-                    self.material.rho * self.section.S / 10e9
+            self.applyWeight()
         self._U = DynamicArray(nl.solve(self._K1, self._F.array()).tolist())
         self._U.arrayFromNull(self._F._unk)
         self._FR = np.asarray(np.dot(K, self._U._array))[0]
@@ -180,13 +176,8 @@ class PoutreEnFlexion(Model):
         """Init super and current class."""
         super().__init__()
         self._D = 1
+        self.elementsClass = Elements.Poutre
         self._effortsRepartis = True
-
-    def mesh(self):
-        """Mesh."""
-        self.elements = []
-        for i in range(0, self._nodes):
-            self.elements.append(Elements.Poutre(self, i))
 
     def solve(self, selected=0, effort=10, reparti=False):
         """Solve model."""
@@ -274,27 +265,15 @@ class TreilliSimple(Model):
          / \    or   / \ /
         1---2       1---3
         """
+        self.elements = []
         if index is 0:
             self._nodes = 3
-            self.elements.append(Elements.TreillisBar(
-                self, [1, 2], sqrt(2) * 100, 0))
-            self.elements.append(Elements.TreillisBar(
-                self, [1, 3], 100, np.pi / 4))
-            self.elements.append(Elements.TreillisBar(
-                self, [2, 3], 100, 3 * np.pi / 4))
+            Mesh = [[[1, 2], sqrt(2) * 100, 0], [[1, 3], 100, np.pi / 4], [[2, 3], 100, 3 * np.pi / 4]]
         else:
             self._nodes = 4
-            self.elements = []
-            self.elements.append(Elements.TreillisBar(
-                self, [1, 2], 100, np.pi / 4))
-            self.elements.append(Elements.TreillisBar(
-                self, [1, 3], 100 * sqrt(2), 0))
-            self.elements.append(Elements.TreillisBar(
-                self, [2, 3], 100, 3 * np.pi / -4))
-            self.elements.append(Elements.TreillisBar(
-                self, [2, 4], 100 * sqrt(2), 0))
-            self.elements.append(Elements.TreillisBar(
-                self, [3, 4], 100, np.pi / 4))
+            Mesh = [[[1, 2], 100, np.pi / 4], [[1, 3], 100 * sqrt(2), 0], [[2, 3], 100, 3 * np.pi / -4], [[2, 4], 100 * sqrt(2), 0], [[3, 4], 100, np.pi / 4]]
+        for e in Mesh:
+            self.elements.append(Elements.TreillisBar(self, e[0], e[1], e[2]))
 
 
     def K(self, index=0):
@@ -329,7 +308,7 @@ class TreilliSimple(Model):
             self._F._unk = [0, 1, -2]
             self._F._array[-1] = -1 * effort
         else:
-            self._F._unk = [0, 1, 2, 3]
+            self._F._unk = [0, 1, -2]
             self._F._array[-1] = -1 * effort
         self._K1 = K.removeNull(self._F._unk)
         self._U = DynamicArray(nl.solve(self._K1, self._F.array()).tolist())
@@ -353,8 +332,8 @@ class TreilliSimple(Model):
         out, nodes = [], self.nodesCoordinates()
         for e in self.elements:
             s, n = e.nodes
-            out.append([[nodes[s - 1][1], nodes[n - 1][1]],
-                        [nodes[s - 1][2], nodes[n - 1][2]]])
+            ss, nn = nodes[s - 1], nodes[n - 1]
+            out.append([[ss[1], nn[1]], [ss[2], nn[2]]])
         return out
 
     @property

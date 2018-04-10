@@ -102,13 +102,11 @@ class App(QMainWindow, Ui_MainWindow):
 
     def materialChanged(self):
         """Change material on selection."""
-        self.model.material = self.model.session.query(Materials).filter(
-            Materials.Name == self.comboBoxMaterials.currentText()).first()
+        self.model.material = self.model.session.query(Materials).filter(Materials.Name == self.comboBoxMaterials.currentText()).first()
 
     def sectionChanged(self):
         """Change section on selection."""
-        self.model.section = self.model.session.query(Sections).filter(
-            Sections.Name == self.comboBoxSections.currentText()).first()
+        self.model.section = self.model.session.query(Sections).filter(Sections.Name == self.comboBoxSections.currentText()).first()
         if self.model.section.has_thickness:
             self.labelThick.setDisabled(False)
             self.doubleSpinBoxThick.setDisabled(False)
@@ -124,13 +122,11 @@ class App(QMainWindow, Ui_MainWindow):
 
     def loadMaterials(self):
         """Load materials from db."""
-        self.comboBoxMaterials.addItems(
-            [i[0] for i in self.model.session.execute(text('select Name from Materials'))])
+        self.comboBoxMaterials.addItems([i[0] for i in self.model.session.execute(text('select Name from Materials'))])
 
     def loadSections(self):
         """Load scetion names from db."""
-        self.comboBoxSections.addItems(
-            [i[0] for i in self.model.session.execute(text('select Name from Sections'))])
+        self.comboBoxSections.addItems([i[0] for i in self.model.session.execute(text('select Name from Sections'))])
 
     def loadConditions(self):
         """Load initial conditions."""
@@ -187,8 +183,7 @@ class App(QMainWindow, Ui_MainWindow):
                     ws.write(line, 2, self.model._U._array[line - 1])
                 wk.close()
         except BaseException:
-            QMessageBox.warning(self, 'Avertissement',
-                                'Le fichier n\'as pas pu etre enregistré')
+            QMessageBox.warning(self, 'Avertissement', 'Le fichier n\'as pas pu etre enregistré')
 
     def compute(self):
         """Compute."""
@@ -207,11 +202,9 @@ class App(QMainWindow, Ui_MainWindow):
         QApplication.processEvents()
         ts = perf_counter()
         if self.model._effortsRepartis:
-            self.model.solve(self.comboBoxConditions.currentIndex(),
-                             self.doubleSpinBoxEffort.value(), self.checkBoxReparti.isChecked())
+            self.model.solve(self.comboBoxConditions.currentIndex(), self.doubleSpinBoxEffort.value(), self.checkBoxReparti.isChecked())
         else:
-            self.model.solve(self.comboBoxConditions.currentIndex(),
-                             self.doubleSpinBoxEffort.value())
+            self.model.solve(self.comboBoxConditions.currentIndex(), self.doubleSpinBoxEffort.value())
         at = perf_counter()
         diag.reset()
         self.labelComputationInfo.setText("Temps de calcul %f s" % (at - tm))

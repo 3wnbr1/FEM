@@ -24,5 +24,5 @@ if __name__ == "__main__":
     window.model = PoutreEnTraction()
     window.compute()
     window.model = TreilliSimple()
-    # window.compute()
+    window.compute()
     sys.exit(0)
