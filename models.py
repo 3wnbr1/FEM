@@ -54,7 +54,6 @@ class Model:
         """Return degrees de liberte."""
         return self.elements[0].k.shape[0] // 2
 
-
     def K(self):
         """Return rigidity matrix."""
         K = Matrix((self._nodes + 1) * self.ddl,
@@ -66,7 +65,7 @@ class Model:
     @property
     def contraintes(self):
         """Contraintes."""
-        return [[0, 1], [0, 1]]
+        pass
 
     @property
     def initial(self):
@@ -192,19 +191,19 @@ class PoutreEnFlexion(Model):
             if reparti is False:
                 self._F._array[-2] = -1 * effort
             else:
-                partEffort(self._F._array[2::2])
+                self.partEffort(self._F._array[2::2])
         elif selected == 1:
             self._F._unk = [0, 1, -2, -1]
             if reparti is False:
                 self._F._array[self._nodes] = -1 * effort
             else:
-                partEffort(self._F._array[2:-1:2])
+                self.partEffort(self._F._array[2:-1:2])
         elif selected == 2:
             self._F._unk = [0, -2]
             if reparti is False:
                 self._F._array[len(self._F._array) // 2 + 1] = -1 * effort
             else:
-                partEffort(self._F._array[2:-1:2])
+                self.partEffort(self._F._array[2:-1:2])
         self._K1 = K.removeNull(self._F._unk)
         self._U = DynamicArray(nl.solve(self._K1, self._F.array()).tolist())
         self._U.arrayFromNull(self._F._unk)
@@ -257,7 +256,6 @@ class TreilliSimple(Model):
         super().__init__()
         self._D = 2
 
-
     def mesh(self, index=0):
         r"""
         Mesh model.
@@ -269,23 +267,22 @@ class TreilliSimple(Model):
         self.elements = []
         if index is 0:
             self._nodes = 3
-            Mesh = [[[1, 2], sqrt(2) * 100, 0], [[1, 3], 100, np.pi / 4], [[2, 3], 100, 3 * np.pi / 4]]
+            Mesh = [[[1, 2], sqrt(2) * 100, 0], [[2, 3], 100, 3 * np.pi / 4], [[3, 1], -100, np.pi / 4]]
         else:
             self._nodes = 4
             Mesh = [[[1, 2], 100, np.pi / 4], [[1, 3], 100 * sqrt(2), 0], [[2, 3], 100, 3 * np.pi / -4], [[2, 4], 100 * sqrt(2), 0], [[3, 4], 100, np.pi / 4]]
         for e in Mesh:
             self.elements.append(Elements.TreillisBar(self, e[0], e[1], e[2]))
 
-
     def K(self, index=0):
         """Return rigidity matrix."""
         K = Matrix((self._nodes) * 2, (self._nodes) * 2)
         if index == 0:
             K.compose(self.elements[0].k, 0, 0)
-            K.compose(self.elements[2].k, 2, 2)
+            K.compose(self.elements[1].k, 2, 2)
             for x in range(0, 4, 2):
                 for y in range(0, 4, 2):
-                    K.compose(self.elements[1].k[np.ix_(
+                    K.compose(self.elements[2].k[np.ix_(
                         [x, x + 1], [y, y + 1])], x, y)
         else:
             x, y = 0, 0
@@ -323,18 +320,17 @@ class TreilliSimple(Model):
             origin = nodes[startn - 1][1::]
             for e in [i for i in self.elements if startn == i.nodes[0]]:
                 if e.nodes[1] not in [i[0] for i in nodes]:
-                    nodes.append([e.nodes[1], origin[0] + e.lenght *
-                                  np.cos(e.alpha), origin[0] + e.lenght * np.sin(e.alpha)])
+                    nodes.append([e.nodes[1], origin[0] + e.lenght * np.cos(e.alpha), origin[0] + e.lenght * np.sin(e.alpha)])
         return nodes
 
     @property
     def initial(self):
         """Initial."""
-        out, nodes = [], self.nodesCoordinates()
-        for e in self.elements:
-            s, n = e.nodes
-            ss, nn = nodes[s - 1], nodes[n - 1]
-            out.append([[ss[1], nn[1]], [ss[2], nn[2]]])
+        out, nodes = [[], []], self.nodesCoordinates()
+        nodes.append(nodes[0])
+        for n in nodes:
+            out[0].append(n[1])
+            out[1].append(n[2])
         return out
 
     @property
@@ -345,7 +341,12 @@ class TreilliSimple(Model):
     @property
     def deplacements(self):
         """Deformations."""
-        return self._U._array[::2]
+        out = []
+        for e in self.elements:
+            a, b = e.nodes[0] - 1, e.nodes[1] - 1
+            print(a+1, b+1)
+            out.append(sqrt((self._U._array[2*b] - self._U._array[2*a])**2+(self._U._array[2*b+1] - self._U._array[2*a+1])**2))
+        return out
 
     @property
     def deformations(self):

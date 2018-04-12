@@ -14,7 +14,6 @@ import time
 from models import *
 from app import App, listModels
 from PyQt5.QtWidgets import QApplication
-from PyQt5.QtTest import QTest
 
 
 if __name__ == "__main__":
