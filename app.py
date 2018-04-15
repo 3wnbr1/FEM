@@ -14,7 +14,7 @@ import models
 import xlsxwriter
 from PyQt5 import uic
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QMainWindow, QApplication, QProgressDialog, QFileDialog, QMessageBox
+from PyQt5.QtWidgets import QMainWindow, QApplication, QProgressDialog, QFileDialog, QMessageBox, QCheckBox
 from sqlalchemy import text
 from db.fem import Materials, Sections
 from matplotlib import pyplot as plt
@@ -48,7 +48,8 @@ class App(QMainWindow, Ui_MainWindow):
         self.loadMaterials()
         self.loadSections()
         self.loadSectionImage()
-        self.isUp2date = True
+        self._isUp2date = True
+        self._showAgain = True
 
         self.dockWidget.topLevelChanged.connect(self.updateWindowSize)
         self.listWidget.currentTextChanged.connect(self.modelChanged)
@@ -152,15 +153,24 @@ class App(QMainWindow, Ui_MainWindow):
 
     def plotMatrix(self):
         """Plot rigidity matrix."""
+        plt.ion()
+        plt.close()
         plt.matshow(self.model.K())
         plt.show()
 
     def showRunAgain(self):
         """Show a message indicating to start again computation."""
-        if self.isUp2date is True:
-            QMessageBox.warning(
-                self, "Attention", "Attention\nLes parametres on changés, il faut relancer les calculs")
-        self.isUp2date = False
+        if self._isUp2date is True and self._showAgain:
+            warning = QMessageBox(self)
+            warning.setText("Attention\nLes parametres on changés, il faut relancer les calculs")
+            warning.setIcon(QMessageBox.Warning)
+            warning.setWindowTitle("Attention")
+            checkBox = QCheckBox()
+            checkBox.setText(" Ne plus me demander")
+            warning.setCheckBox(checkBox)
+            warning.exec_()
+            self._showAgain = not checkBox.isChecked()
+            self._isUp2date = False
 
     def saveFigure(self):
         """Save figure."""
@@ -221,7 +231,7 @@ class App(QMainWindow, Ui_MainWindow):
     def updateGraph(self):
         """Update graphs."""
         self.mpl.canvas.graph(self.model, self.comboBoxResults.currentIndex())
-        self.isUp2date = True
+        self._isUp2date = True
 
     def updateSection(self):
         """Update section dimensions."""

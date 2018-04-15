@@ -6,6 +6,7 @@
 
 
 import numpy as np
+import matplotlib.image as image
 from PyQt5 import QtWidgets
 from matplotlib.figure import Figure
 from matplotlib.collections import LineCollection
@@ -52,12 +53,25 @@ class MplCanvas(FigureCanvasQTAgg):
             cbar = self.fig.colorbar(lc)
             cbar.ax.set_title(r"Contraintes en $MPa$")
 
+        # Affiche l'effort et les liasons
+        for effort in model.efforts:
+            self.ax.arrow(effort[0], effort[1], effort[2], effort[3], head_width=effort[4], head_length=effort[5], fc='m', ec='m')
+
+        encastrement_horiz = image.imread('ui/liaisons/encastrement_horiz.jpg')
+        encastrement_vert = image.imread('ui/liaisons/encastrement_vert.jpg')
+
+        if model.__class__.__name__ == "PoutreEnTraction":
+            self.ax.set_xlim([-0.1, 0.1])
+            self.ax.set_ylim([-50, 1050])
+            self.ax.get_xaxis().set_visible(False)
+            self.ax.imshow(encastrement_horiz, aspect='auto', extent=(-0.01, 0.01, -30, 5))
+        elif model.__class__.__name__ == "PoutreEnFlexion":
+            pass
+        elif model.__class__.__name__ == "TreilliSimple":
+            pass
+
         # Affiche la poutre initiale
-        if len(model.initial) == 2:
-            self.ax.plot(model.initial[0], model.initial[1], linewidth=2, color='k', linestyle="-.")
-        else:
-            for line in model.initial:
-                self.ax.plot(line[0], line[1], linewidth=2, color='k', linestyle="-.")
+        self.ax.plot(model.initial[0], model.initial[1], linewidth=2, color='k', linestyle="-.")
         self.ax.set_xlabel(model.legend['xtitle'])
         self.ax.set_ylabel(model.legend['ytitle'])
         self.draw()
@@ -81,7 +95,3 @@ class MplWidget(QtWidgets.QWidget):
         self.vbl = QtWidgets.QVBoxLayout()
         self.vbl.addWidget(self.canvas)
         self.setLayout(self.vbl)
-
-    def set_figure(self):
-        """Set figure."""
-        self.canvas.subplots()

@@ -63,19 +63,9 @@ class Model:
         return K
 
     @property
-    def contraintes(self):
-        """Contraintes."""
-        pass
-
-    @property
     def initial(self):
         """Return the initial poutre."""
         return [0, self._lenght], [0, 0]
-
-    @property
-    def legend(self):
-        """Graph legend."""
-        return {"title": "Not defined", "xtitle": "None", "ytitle": "None"}
 
     def __repr__(self):
         """Repr."""
@@ -90,6 +80,8 @@ class PoutreEnTraction(Model):
         super().__init__()
         self._D = 1
         self.elementsClass = Elements.Bar
+        self.efforts = [[0, 1000, 0, 25, 0.003, 25]]
+        self.links = []
 
     def applyWeight(self):
         """Apply weight to each node."""
@@ -110,11 +102,14 @@ class PoutreEnTraction(Model):
             self.applyWeight()
         elif selected == 2:
             self._F._array[-1] = 0
+            self.efforts = []
             self.applyWeight()
         elif selected == 3:
             self._F._array[-1] = -1 * effort
+            self.efforts = [[0, 1045, 0, -25, 0.003, 25]]
         elif selected == 4:
             self._F._array[-1] = -1 * effort
+            self.efforts = [[0, 1045, 0, -25, 0.003, 25]]
             self.applyWeight()
         self._U = DynamicArray(nl.solve(self._K1, self._F.array()).tolist())
         self._U.arrayFromNull(self._F._unk)
@@ -180,7 +175,7 @@ class PoutreEnFlexion(Model):
 
     def partEffort(self, effort, array):
         """Part effort equally on an array."""
-        array = [effort / self._nodes] * len(array)
+        return [-1 * effort / self._nodes] * len(array)
 
     def solve(self, selected=0, effort=10, reparti=False):
         """Solve model."""
@@ -188,22 +183,31 @@ class PoutreEnFlexion(Model):
         self._F = DynamicArray([0] * K.shape[0])
         if selected == 0:
             self._F._unk = [0, 1]
+            self.efforts = [[self._lenght, 0, 0, -1, 20, 0.25]]
             if reparti is False:
                 self._F._array[-2] = -1 * effort
             else:
-                self.partEffort(self._F._array[2::2])
+                for i in range(1, 10):
+                    self.efforts.append([self._lenght * i / 10, 0, 0, -1, 20, 0.25])
+                self._F._array[2::2] = self.partEffort(effort, self._F._array[2::2])
         elif selected == 1:
             self._F._unk = [0, 1, -2, -1]
+            self.efforts = [[self._lenght / 2, 0, 0, -0.04, 20, 0.01]]
             if reparti is False:
                 self._F._array[self._nodes] = -1 * effort
             else:
-                self.partEffort(self._F._array[2:-1:2])
+                for i in [x for x in range(1, 11) if x != 5]:
+                    self.efforts.append([self._lenght * i / 10, 0, 0, -0.04, 20, 0.01])
+                self._F._array[2:-1:2] = self.partEffort(effort, self._F._array[2:-1:2])
         elif selected == 2:
             self._F._unk = [0, -2]
+            self.efforts = [[self._lenght / 2, 0, 0, -0.1, 20, 0.05]]
             if reparti is False:
                 self._F._array[len(self._F._array) // 2 + 1] = -1 * effort
             else:
-                self.partEffort(self._F._array[2:-1:2])
+                for i in range(1, 10):
+                    self.efforts.append([self._lenght * i / 10, 0, 0, -0.1, 20, 0.05])
+                self._F._array[2:-1:2] = self.partEffort(effort, self._F._array[2:-1:2])
         self._K1 = K.removeNull(self._F._unk)
         self._U = DynamicArray(nl.solve(self._K1, self._F.array()).tolist())
         self._U.arrayFromNull(self._F._unk)
@@ -303,6 +307,7 @@ class TreilliSimple(Model):
         K = self.K()
         self._F = DynamicArray([0] * K.shape[0])
         if selected == 0:
+            self.efforts = [[sqrt(2)*100, 0, 0, -5, 2, 5]]
             self._F._unk = [0, 1, -2]
             self._F._array[-1] = -1 * effort
         else:
