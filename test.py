@@ -11,7 +11,6 @@ __email__ = "ewen.brun@ecam.fr, pierre.haon@ecam.fr"
 
 import sys
 import time
-from models import *
 from app import App, listModels
 from PyQt5.QtWidgets import QApplication
 

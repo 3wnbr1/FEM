@@ -218,7 +218,6 @@ class App(QMainWindow, Ui_MainWindow):
         self.model.elems(int(self.lineEditElements.text()))
         diag.show()
         QApplication.processEvents()
-        ts = perf_counter()
         if self.model._effortsRepartis:
             self.model.solve(self.comboBoxConditions.currentIndex(), self.doubleSpinBoxEffort.value(), self.checkBoxReparti.isChecked())
         else:

@@ -110,7 +110,7 @@ class DeformationTensor(Tensor):
         mu, lbda = nu * E / ((1 + nu) * (1 - 2 * nu)), E / (2 * (1 + nu))
         mat = Matrix(6, 6, 0.0)
         for i in range(6):
-            mat[i] = 2*mu
+            mat[i, i] = 2*mu
         mat.compose(Matrix(3, 3, lbda), 0, 0)
         return mat
 

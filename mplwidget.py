@@ -59,6 +59,8 @@ class MplCanvas(FigureCanvasQTAgg):
 
         encastrement_horiz = image.imread('ui/liaisons/encastrement_horiz.jpg')
         encastrement_vert = image.imread('ui/liaisons/encastrement_vert.jpg')
+        glissiere = image.imread('ui/liaisons/glissiere.jpg')
+        rotule = image.imread('ui/liaisons/rotule.jpg')
 
         if model.__class__.__name__ == "PoutreEnTraction":
             self.ax.set_xlim([-0.1, 0.1])
@@ -66,6 +68,9 @@ class MplCanvas(FigureCanvasQTAgg):
             self.ax.get_xaxis().set_visible(False)
             self.ax.imshow(encastrement_horiz, aspect='auto', extent=(-0.01, 0.01, -30, 5))
         elif model.__class__.__name__ == "PoutreEnFlexion":
+            # self.ax.imshow(encastrement_vert, aspect='auto', extent=(-20, 10, -0.5, 0.5)) # 1
+            # self.ax.imshow(encastrement_vert, aspect='auto', extent=(-20, 10, -0.005, 0.005)) # 2
+            # self.ax.imshow(glissiere, aspect='auto', extent=(model._lenght-20, model._lenght + 20, -0.01, 0)) # 2
             pass
         elif model.__class__.__name__ == "TreilliSimple":
             pass

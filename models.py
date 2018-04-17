@@ -232,7 +232,7 @@ class PoutreEnFlexion(Model):
     def contraintes(self):
         """Contraintes."""
         vonMises = []
-        for e, i in zip(self.elements, range(len(self.elements) // 2)):
+        for e, i in zip(self.elements, range(len(self.elements))):
             vonMises.append(e.deformationsTensor(self._U._array[2 * i + 2] - self._U._array[2 * i],
                                                  self._U._array[2 * i + 3] - self._U._array[2 * i + 1]).generalizedHooke().vonMises())
         return vonMises

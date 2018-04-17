@@ -46,8 +46,7 @@ class Poutre:
     def deformationsTensor(self, v, theta):
         """Return -> DeformationTensor."""
         d = DeformationTensor(self)
-        d.vector[3] = v / (self.lenght) - theta
-        d.vector[5] = theta / self.lenght
+        d.vector[3] = theta / 2
         return d
 
 
