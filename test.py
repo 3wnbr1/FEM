@@ -38,7 +38,7 @@ if __name__ == "__main__":
     window = App()
     window._showAgain = False
     window.show()
-    window.updateWindowSize()
+    window.updateWindowSize(False)
     window.elementsNumberChanged()
     for model in range(len(listModels())):
         window.checkBoxReparti.setChecked(False)
