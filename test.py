@@ -22,15 +22,16 @@ def test_conditions():
         window.comboBoxSections.setCurrentIndex(1)
         window.comboBoxMaterials.setCurrentIndex(1)
         window.compute()
+        test_graphs()
 
 
 def test_graphs():
     """Parse graph results dropdown."""
-    for result in range(3):
+    for result in range(2):
         window.comboBoxResults.setCurrentIndex(result)
         window.updateGraph()
         QApplication.processEvents()
-        time.sleep(1)
+        time.sleep(0.2)
 
 
 if __name__ == "__main__":
@@ -44,9 +45,7 @@ if __name__ == "__main__":
         window.checkBoxReparti.setChecked(False)
         window.listWidget.setCurrentRow(model)
         test_conditions()
-        test_graphs()
         if window.model._effortsRepartis:
             window.checkBoxReparti.setChecked(True)
             test_conditions()
-            test_graphs()
     sys.exit(0)

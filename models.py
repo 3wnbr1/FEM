@@ -331,7 +331,12 @@ class TreilliSimple(Model):
     @property
     def contraintes(self):
         """Contraintes."""
-        return [0, 1]
+        vonMises = []
+        n = len(self.elements)
+        for e, i in zip(self.elements, range(n)):
+            vonMises.append(e.deformationsTensor(self._U._array[(2 * i + 2) % (2*n)] - self._U._array[(2 * i) % (2*n)],
+                                                 self._U._array[(2 * i + 3) % (2*n)] - self._U._array[(2 * i + 1) % (2*n)]).generalizedHooke().vonMises())
+        return vonMises
 
     @property
     def types(self):

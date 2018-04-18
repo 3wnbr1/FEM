@@ -76,3 +76,9 @@ class TreillisBar:
         self.k.compose(-1 * self.A, 2, 0)
         self.k.compose(-1 * self.A, 0, 2)
         self.k *= model.material.E * model.section.S / self.lenght
+
+    def deformationsTensor(self, u, v):
+        """Return -> DeformationTensor."""
+        d = DeformationTensor(self)
+        d.vector[0] = (u**2 + v**2)**(1/2) / self.lenght
+        return d

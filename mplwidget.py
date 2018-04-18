@@ -41,11 +41,11 @@ class MplCanvas(FigureCanvasQTAgg):
 
         # Afiche la courbe de deformee coloree en fonction du resulat selectionné
         if t == 0:
-            lc = self.colorline(model.deformee[0], model.deformee[1], np.round(np.absolute(model.deplacements[:-1:]), 12))
+            lc = self.colorline(model.deformee[0], model.deformee[1], np.round(np.absolute(model.deplacements[:-1:]), 10))
             cbar = self.fig.colorbar(lc)
             cbar.ax.set_title(r"Déplacement en $mm$")
         elif t == 1:
-            lc = self.colorline(model.deformee[0], model.deformee[1], np.round(np.absolute(model.contraintes), 12))
+            lc = self.colorline(model.deformee[0], model.deformee[1], np.round(np.absolute(model.contraintes), 10))
             cbar = self.fig.colorbar(lc)
             cbar.ax.set_title(r"Contraintes en $MPa$")
 
