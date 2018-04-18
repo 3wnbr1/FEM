@@ -2,7 +2,16 @@
 # coding: utf-8
 
 
-"""Used to store different types of elements."""
+"""
+Pure implementation des elements Barres et Poutres.
+
+- Numero de l'element.
+- Longeur de l'element.
+- Materiau et Section.
+- Matrices de rigidité.
+- Tenseur des deformations qui peut etre transformé en tenseur des contraintes
+  par produit matriciel avec la matrive Hooke.
+"""
 
 
 __author__ = "Ewen BRUN, Pierre HAON"

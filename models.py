@@ -13,7 +13,7 @@ import numpy as np
 import numpy.linalg as nl
 from math import sqrt
 from db import fem
-from modules.Computation import Matrix, DynamicArray, nodesCombination
+from modules.Computation import Matrix, DynamicArray
 from modules import Elements
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -35,8 +35,9 @@ class Model:
         self.session = DBSession()
         self.material = self.session.query(fem.Materials).first()
         self.section = self.session.query(fem.Sections).first()
-        self._lenght = 1000  # default size is 1 meter
+        self._lenght = 1000
         self._effortsRepartis = False
+        self.selected = 0
 
     def elems(self, n):
         """Set elements number and mesh."""
@@ -89,25 +90,25 @@ class PoutreEnTraction(Model):
             self._F._array[i] = - 9.81 * e.lenght * \
                 self.material.rho * self.section.S / 10e9
 
-    def solve(self, selected=0, effort=10):
+    def solve(self, effort=10):
         """Solve model."""
         K = self.K()
         self._F = DynamicArray([0] * K.shape[0])
         self._F._unk = [0]
         self._K1 = K.removeNull([0])
-        if selected == 0:
+        if self.selected == 0:
             self._F._array[-1] = effort
-        elif selected == 1:
+        elif self.selected == 1:
             self._F._array[-1] = effort
             self.applyWeight()
-        elif selected == 2:
+        elif self.selected == 2:
             self._F._array[-1] = 0
             self.efforts = []
             self.applyWeight()
-        elif selected == 3:
+        elif self.selected == 3:
             self._F._array[-1] = -1 * effort
             self.efforts = [[0, 1045, 0, -25, 0.003, 25]]
-        elif selected == 4:
+        elif self.selected == 4:
             self._F._array[-1] = -1 * effort
             self.efforts = [[0, 1045, 0, -25, 0.003, 25]]
             self.applyWeight()
@@ -133,11 +134,6 @@ class PoutreEnTraction(Model):
     def deplacements(self):
         """Deformations."""
         return np.cumsum(np.array(self._U._array))
-
-    @property
-    def deformations(self):
-        """Deformations."""
-        return [0, 1]
 
     @property
     def contraintes(self):
@@ -177,11 +173,11 @@ class PoutreEnFlexion(Model):
         """Part effort equally on an array."""
         return [-1 * effort / self._nodes] * len(array)
 
-    def solve(self, selected=0, effort=10, reparti=False):
+    def solve(self, effort=10, reparti=False):
         """Solve model."""
         K = self.K()
         self._F = DynamicArray([0] * K.shape[0])
-        if selected == 0:
+        if self.selected == 0:
             self._F._unk = [0, 1]
             self.efforts = [[self._lenght, 0, 0, -1, 20, 0.25]]
             if reparti is False:
@@ -190,7 +186,7 @@ class PoutreEnFlexion(Model):
                 for i in range(1, 10):
                     self.efforts.append([self._lenght * i / 10, 0, 0, -1, 20, 0.25])
                 self._F._array[2::2] = self.partEffort(effort, self._F._array[2::2])
-        elif selected == 1:
+        elif self.selected == 1:
             self._F._unk = [0, 1, -2, -1]
             self.efforts = [[self._lenght / 2, 0, 0, -0.04, 20, 0.01]]
             if reparti is False:
@@ -199,7 +195,7 @@ class PoutreEnFlexion(Model):
                 for i in [x for x in range(1, 11) if x != 5]:
                     self.efforts.append([self._lenght * i / 10, 0, 0, -0.04, 20, 0.01])
                 self._F._array[2:-1:2] = self.partEffort(effort, self._F._array[2:-1:2])
-        elif selected == 2:
+        elif self.selected == 2:
             self._F._unk = [0, -2]
             self.efforts = [[self._lenght / 2, 0, 0, -0.1, 20, 0.05]]
             if reparti is False:
@@ -222,11 +218,6 @@ class PoutreEnFlexion(Model):
     def deplacements(self):
         """Deformations."""
         return self._U._array[::2]
-
-    @property
-    def deformations(self):
-        """Deformations."""
-        return [0, 1]
 
     @property
     def contraintes(self):
@@ -264,9 +255,9 @@ class TreilliSimple(Model):
         r"""
         Mesh model.
 
-          3           2---4
-         / \    or   / \ /
-        1---2       1---3
+          3
+         / \
+        1---2
         """
         self.elements = []
         if index is 0:
@@ -288,29 +279,14 @@ class TreilliSimple(Model):
                 for y in range(0, 4, 2):
                     K.compose(self.elements[2].k[np.ix_(
                         [x, x + 1], [y, y + 1])], x, y)
-        else:
-            x, y = 0, 0
-            for e in self.elements[0::2]:
-                K.compose(e.k, 2 * x, 2 * y)
-                x, y = x + 1, y + 1
-            for e in self.elements[1::2]:
-                c = nodesCombination(e.nodes)
-                for x in range(0, 4, 2):
-                    for y in range(0, 4, 2):
-                        k = e.k[np.ix_([x, x + 1], [y, y + 1])]
-                        xx, yy = next(c)
-                        K[np.ix_([xx, xx + 1], [yy, yy + 1])] += k
         return K
 
-    def solve(self, selected=0, effort=10):
+    def solve(self, effort=10):
         """Solve model."""
         K = self.K()
         self._F = DynamicArray([0] * K.shape[0])
-        if selected == 0:
+        if self.selected == 0:
             self.efforts = [[sqrt(2)*100, 0, 0, -5, 2, 5]]
-            self._F._unk = [0, 1, -2]
-            self._F._array[-1] = -1 * effort
-        else:
             self._F._unk = [0, 1, -2]
             self._F._array[-1] = -1 * effort
         self._K1 = K.removeNull(self._F._unk)
@@ -349,14 +325,8 @@ class TreilliSimple(Model):
         out = []
         for e in self.elements:
             a, b = e.nodes[0] - 1, e.nodes[1] - 1
-            print(a+1, b+1)
             out.append(sqrt((self._U._array[2*b] - self._U._array[2*a])**2+(self._U._array[2*b+1] - self._U._array[2*a+1])**2))
         return out
-
-    @property
-    def deformations(self):
-        """Deformations."""
-        return [0, 1]
 
     @property
     def contraintes(self):

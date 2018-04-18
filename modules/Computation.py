@@ -13,20 +13,12 @@ import numpy as np
 from math import sqrt
 
 
-def nodesCombination(lst):
-    """Return nodes combinations as list."""
-    for x in lst:
-        for y in lst:
-            yield [x, y]
-
-
 class Matrix(np.matrix):
     """Extension of the np.matrix."""
 
     def __new__(self, x, y, value=0.0):
         """Inheritance."""
         return super(Matrix, self).__new__(self, [[value] * x] * y)
-
 
     def compose(self, matrix, x, y):
         """Composes matrices."""

@@ -624,11 +624,6 @@ p, li { white-space: pre-wrap; }
       </property>
       <item>
        <property name="text">
-        <string>Déformée</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
         <string>Déplacements</string>
        </property>
       </item>

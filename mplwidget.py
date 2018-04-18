@@ -45,10 +45,6 @@ class MplCanvas(FigureCanvasQTAgg):
             cbar = self.fig.colorbar(lc)
             cbar.ax.set_title(r"Déplacement en $mm$")
         elif t == 1:
-            lc = self.colorline(model.deformee[0], model.deformee[1], np.absolute(model.deformations))
-            cbar = self.fig.colorbar(lc)
-            cbar.ax.set_title(r"Déformation en %")
-        elif t == 2:
             lc = self.colorline(model.deformee[0], model.deformee[1], np.round(np.absolute(model.contraintes), 12))
             cbar = self.fig.colorbar(lc)
             cbar.ax.set_title(r"Contraintes en $MPa$")
@@ -61,6 +57,7 @@ class MplCanvas(FigureCanvasQTAgg):
         encastrement_vert = image.imread('ui/liaisons/encastrement_vert.jpg')
         glissiere = image.imread('ui/liaisons/glissiere.jpg')
         rotule = image.imread('ui/liaisons/rotule.jpg')
+        ponctuelle = image.imread('ui/liaisons/ponctuelle.jpg')
 
         if model.__class__.__name__ == "PoutreEnTraction":
             self.ax.set_xlim([-0.1, 0.1])
@@ -68,10 +65,14 @@ class MplCanvas(FigureCanvasQTAgg):
             self.ax.get_xaxis().set_visible(False)
             self.ax.imshow(encastrement_horiz, aspect='auto', extent=(-0.01, 0.01, -30, 5))
         elif model.__class__.__name__ == "PoutreEnFlexion":
-            # self.ax.imshow(encastrement_vert, aspect='auto', extent=(-20, 10, -0.5, 0.5)) # 1
-            # self.ax.imshow(encastrement_vert, aspect='auto', extent=(-20, 10, -0.005, 0.005)) # 2
-            # self.ax.imshow(glissiere, aspect='auto', extent=(model._lenght-20, model._lenght + 20, -0.01, 0)) # 2
-            pass
+            if model.selected == 0:
+                self.ax.imshow(encastrement_vert, aspect='auto', extent=(-20, 10, -0.5, 0.5))
+            if model.selected == 1:
+                self.ax.imshow(encastrement_vert, aspect='auto', extent=(-20, 10, -0.005, 0.005))
+                self.ax.imshow(glissiere, aspect='auto', extent=(model._lenght-20, model._lenght + 20, -0.01, 0))
+            if model.selected == 2:
+                self.ax.imshow(rotule, aspect='auto', extent=(-20, 20, -0.03, 0))
+                self.ax.imshow(ponctuelle, aspect='auto', extent=(model._lenght-20, model._lenght + 20, -0.03, 0))
         elif model.__class__.__name__ == "TreilliSimple":
             pass
 

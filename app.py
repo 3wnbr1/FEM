@@ -55,9 +55,9 @@ class App(QMainWindow, Ui_MainWindow):
         self.listWidget.currentTextChanged.connect(self.modelChanged)
         self.comboBoxMaterials.currentTextChanged.connect(self.materialChanged)
         self.comboBoxSections.currentTextChanged.connect(self.sectionChanged)
+        self.comboBoxConditions.currentTextChanged.connect(self.conditionsChanged)
         self.comboBoxResults.currentTextChanged.connect(self.updateGraph)
-        self.horizontalSliderElements.valueChanged.connect(
-            self.elementsNumberChanged)
+        self.horizontalSliderElements.valueChanged.connect(self.elementsNumberChanged)
         self.pushButtonStartComputation.clicked.connect(self.compute)
         self.pushButtonSave.clicked.connect(self.saveFigure)
         self.pushButtonExcel.clicked.connect(self.saveExcel)
@@ -68,7 +68,7 @@ class App(QMainWindow, Ui_MainWindow):
         """Init watchdog to detect when parameter do change."""
         self.comboBoxMaterials.activated.connect(self.showRunAgain)
         self.comboBoxSections.activated.connect(self.showRunAgain)
-        self.comboBoxConditions.activated.connect(self.showRunAgain)  # WARNING
+        self.comboBoxConditions.activated.connect(self.showRunAgain)
         self.doubleSpinBoxTall.valueChanged.connect(self.showRunAgain)
         self.doubleSpinBoxWide.valueChanged.connect(self.showRunAgain)
         self.doubleSpinBoxThick.valueChanged.connect(self.showRunAgain)
@@ -124,6 +124,10 @@ class App(QMainWindow, Ui_MainWindow):
         """Change in number of elements."""
         self.lineEditElements.setText(
             str(int(2**(self.horizontalSliderElements.value()))))
+
+    def conditionsChanged(self):
+        """Change in initial conditions."""
+        self.model.selected = self.comboBoxConditions.currentIndex()
 
     def queryAll(self, where):
         """Query all elements names in column."""
@@ -219,9 +223,9 @@ class App(QMainWindow, Ui_MainWindow):
         diag.show()
         QApplication.processEvents()
         if self.model._effortsRepartis:
-            self.model.solve(self.comboBoxConditions.currentIndex(), self.doubleSpinBoxEffort.value(), self.checkBoxReparti.isChecked())
+            self.model.solve(self.doubleSpinBoxEffort.value(), self.checkBoxReparti.isChecked())
         else:
-            self.model.solve(self.comboBoxConditions.currentIndex(), self.doubleSpinBoxEffort.value())
+            self.model.solve(self.doubleSpinBoxEffort.value())
         at = perf_counter()
         diag.reset()
         self.labelComputationInfo.setText("Temps de calcul %f s" % (at - tm))
