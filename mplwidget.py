@@ -61,7 +61,7 @@ class MplCanvas(FigureCanvasQTAgg):
 
         if model.__class__.__name__ == "PoutreEnTraction":
             self.ax.set_xlim([-0.1, 0.1])
-            self.ax.set_ylim([-50, 1050])
+            self.ax.set_ylim([-50, model._lenght + 50])
             self.ax.get_xaxis().set_visible(False)
             self.ax.imshow(encastrement_horiz, aspect='auto', extent=(-0.01, 0.01, -30, 5))
         elif model.__class__.__name__ == "PoutreEnFlexion":
