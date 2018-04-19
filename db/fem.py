@@ -20,6 +20,7 @@ class Materials(Base):
     E = Column(Integer)
     rho = Column(Integer)
     nu = Column(Integer)
+    Re = Column(Integer)
 
     def __repr__(self):
         """repr."""

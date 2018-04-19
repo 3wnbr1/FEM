@@ -41,6 +41,7 @@ class App(QMainWindow, Ui_MainWindow):
         Ui_MainWindow.__init__(self)
         self.setupUi(self)
         self.horizontalSliderElements.setVisible(False)
+        self.labelLimit.setVisible(False)
         self.lineEditElements.setVisible(False)
         self.lineEditElements.setText("128")
         self.listWidget.addItems(listModels())
@@ -62,6 +63,7 @@ class App(QMainWindow, Ui_MainWindow):
         self.pushButtonSave.clicked.connect(self.saveFigure)
         self.pushButtonExcel.clicked.connect(self.saveExcel)
         self.pushButtonPlotMatrix.clicked.connect(self.plotMatrix)
+        self.mpl.canvas.depassement.connect(self.depassement)
         self.initWatchDog()
 
     def initWatchDog(self):
@@ -143,8 +145,13 @@ class App(QMainWindow, Ui_MainWindow):
 
     def loadConditions(self):
         """Load initial conditions."""
+        self.labelLimit.setVisible(False)
         self.comboBoxConditions.clear()
         self.comboBoxConditions.addItems(self.model.types)
+
+    def depassement(self):
+        """Depassement de la limite elastique du materiau."""
+        self.labelLimit.setVisible(True)
 
     def loadSectionImage(self):
         """Load image corresponding to section from db."""

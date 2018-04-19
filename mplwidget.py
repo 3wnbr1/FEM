@@ -8,6 +8,7 @@
 import numpy as np
 import matplotlib.image as image
 from PyQt5 import QtWidgets
+from PyQt5.QtCore import pyqtSignal
 from matplotlib.figure import Figure
 from matplotlib.collections import LineCollection
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
@@ -22,6 +23,8 @@ def make_segments(x, y):
 
 class MplCanvas(FigureCanvasQTAgg):
     """MplCanvas."""
+
+    depassement = pyqtSignal()
 
     def __init__(self):
         """Init."""
@@ -45,9 +48,12 @@ class MplCanvas(FigureCanvasQTAgg):
             cbar = self.fig.colorbar(lc)
             cbar.ax.set_title(r"Déplacement en $mm$")
         elif t == 1:
-            lc = self.colorline(model.deformee[0], model.deformee[1], np.round(np.absolute(model.contraintes), 10))
+            contraintes = model.contraintes
+            lc = self.colorline(model.deformee[0], model.deformee[1], np.round(np.absolute(contraintes), 10))
             cbar = self.fig.colorbar(lc)
             cbar.ax.set_title(r"Contraintes en $MPa$")
+            if max(contraintes) >= model.material.Re:
+                self.depassement.emit()
 
         # Affiche l'effort et les liasons
         for effort in model.efforts:
