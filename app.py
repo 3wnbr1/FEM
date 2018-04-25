@@ -43,7 +43,7 @@ class App(QMainWindow, Ui_MainWindow):
         self.horizontalSliderElements.setVisible(False)
         self.labelLimit.setVisible(False)
         self.lineEditElements.setVisible(False)
-        self.lineEditElements.setText("128")
+        self.lineEditElements.setText("512")
         self.listWidget.addItems(listModels())
         self.model = models.Model()
         self.loadMaterials()
@@ -99,9 +99,11 @@ class App(QMainWindow, Ui_MainWindow):
         self.loadConditions()
         if self.model._effortsRepartis:
             self.checkBoxReparti.setEnabled(True)
+            self.labelEffort.setText("Effort en N/m")
         else:
             self.checkBoxReparti.setChecked(False)
             self.checkBoxReparti.setEnabled(False)
+            self.labelEffort.setText("Effort en N")
 
     def currentObject(self, Class, name):
         """Return currentObject from Class matching Name."""

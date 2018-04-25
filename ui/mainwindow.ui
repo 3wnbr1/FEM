@@ -29,7 +29,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>TIPE - Théorie et applications de la méthode aux élements finis</string>
+   <string>TIPE - Théorie et application de la méthode aux élements finis</string>
   </property>
   <property name="unifiedTitleAndToolBarOnMac">
    <bool>true</bool>
