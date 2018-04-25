@@ -165,7 +165,7 @@ class PoutreEnFlexion(Model):
     def __init__(self):
         """Init super and current class."""
         super().__init__()
-        self._D = 1
+        self._D = 2
         self.elementsClass = Elements.Poutre
         self._effortsRepartis = True
 
@@ -212,7 +212,8 @@ class PoutreEnFlexion(Model):
     @property
     def deformee(self):
         """Deformée of model."""
-        return np.cumsum(self._lenght / self._nodes * np.cos(self._U._array[1::2])), self._U._array[::2]
+        proj = [0] + np.cumsum(self._lenght / self._nodes * np.cos(self._U._array[1::2])).tolist()
+        return proj[:-1:], self._U._array[::2]
 
     @property
     def deplacements(self):

@@ -209,7 +209,7 @@ class App(QMainWindow, Ui_MainWindow):
                 for line in range(1, self.model._nodes + 1):
                     ws.write(line, 0, line)
                     ws.write(line, 1, self.model._FR[line - 1])
-                    ws.write(line, 2, self.model._U._array[line - 1])
+                    ws.write(line, 2, self.model._U._array[(line - 1)*self.model._D])
                 wk.close()
         except BaseException:
             QMessageBox.warning(self, 'Avertissement', 'Le fichier n\'as pas pu etre enregistré')

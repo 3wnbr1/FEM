@@ -10,6 +10,7 @@ __email__ = "ewen.brun@ecam.fr, pierre.haon@ecam.fr"
 
 
 import sys
+import time
 from app import App
 from PyQt5 import QtCore
 from PyQt5.QtGui import QPixmap
@@ -24,9 +25,8 @@ if hasattr(QtCore.Qt, 'AA_UseHighDpiPixmaps'):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     splashscreen = QSplashScreen(QPixmap('ui/splash.jpg'))
-    splashscreen.showMessage(
-        "Chargement de l'interface...\n\nCrée dans le cadre des TIPE 2017 - 2018\nPar Ewen BRUN et Pierre HAON\nClasses Préparatoires à l'ECAM Lyon")
     splashscreen.show()
+    time.sleep(1)
     window = App()
     splashscreen.finish(window)
     window.show()

@@ -21,16 +21,19 @@ The purpose of this code is first academic. It's to explain simply how industria
 Your computer must have more than 2GB of RAM and verify one of the specifications bellow.
 
 - Anaconda Python 3.5 or higher
-- Python 3.5 or higher and specified packages
+- Python 3.5 or higher with ```pip install -r requirements.txt```
 
 
 ### Installation
 
+##### Anaconda 3.5 or higher
 
+Download the latest version [Here](https://github.com/3wnbr1/FEM/releases)
+and click `run` on macOS or Linux or `runWin` on windows
 ##### Linux and macOS
 
 ```bash
-git clone https://github.com/EwenBrun/FEM.git
+git clone https://github.com/3wnbr1/FEM.git
 cd FEM
 pip install -r requirements.txt
 ./run
@@ -38,6 +41,9 @@ pip install -r requirements.txt
 
 ##### Windows
 
-- Clone the repo
-- run ```pip install -r requirements.txt```
-- click ```runWin.bat``` or ```runWin```
+```bash
+git clone https://github.com/3wnbr1/FEM.git
+cd FEM
+pip install -r requirements.txt
+start runWin.bat
+```
