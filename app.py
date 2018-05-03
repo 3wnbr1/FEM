@@ -93,6 +93,7 @@ class App(QMainWindow, Ui_MainWindow):
         self.groupBoxConditions.setEnabled(True)
         self.groupBoxElements.setEnabled(True)
         self.groupBoxComputation.setEnabled(True)
+        self.pushButtonPlotMatrix.setEnabled(False)
         self.labelStatus1.setText("✅")
         self.model = eval(
             "models." + self.listWidget.currentItem().text() + '()')
@@ -126,6 +127,7 @@ class App(QMainWindow, Ui_MainWindow):
 
     def elementsNumberChanged(self):
         """Change in number of elements."""
+        self.pushButtonPlotMatrix.setEnabled(False)
         self.lineEditElements.setText(
             str(int(2**(self.horizontalSliderElements.value()))))
 
@@ -229,6 +231,7 @@ class App(QMainWindow, Ui_MainWindow):
         self.model._lenght = self.doubleSpinBoxLenght.value()
         self.updateSection()
         self.model.elems(int(self.lineEditElements.text()))
+        self.pushButtonPlotMatrix.setEnabled(True)
         diag.show()
         QApplication.processEvents()
         if self.model._effortsRepartis:
