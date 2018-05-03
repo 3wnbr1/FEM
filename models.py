@@ -95,7 +95,7 @@ class PoutreEnTraction(Model):
         K = self.K()
         self._F = DynamicArray([0] * K.shape[0])
         self._F._unk = [0]
-        self._K1 = K.removeNull([0])
+        self._K1 = K.removeNull(self._F._unk)
         if self.selected == 0:
             self._F._array[-1] = effort
         elif self.selected == 1:
@@ -133,7 +133,7 @@ class PoutreEnTraction(Model):
     @property
     def deplacements(self):
         """Deformations."""
-        return np.cumsum(np.array(self._U._array))
+        return np.array(self._U._array)
 
     @property
     def contraintes(self):

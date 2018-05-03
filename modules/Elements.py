@@ -31,7 +31,7 @@ class Bar:
         self.material = model.material
         self.lenght = model._lenght / model._nodes
         self.k = np.matrix([[1, -1], [-1, 1]])
-        self.k *= model.material.E * model.section.S * self.lenght
+        self.k *= model.material.E * model.section.S / self.lenght
 
     def deformationsTensor(self, u):
         """Return -> DeformationTensor."""
